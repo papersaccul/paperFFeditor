@@ -7,6 +7,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.ComboBox;
 import javafx.scene.layout.GridPane;
 import com.papersaccul.paperffeditor.AppConfig;
+import com.papersaccul.paperffeditor.util.LocalizationUtil;
 
 /**
  * SettingsPanel class provides the GUI elements for configuring video and audio settings.
@@ -32,24 +33,24 @@ public class SettingsPanel extends GridPane {
         this.setVgap(10);
         this.setHgap(10);
 
-        Label codecLabel = new Label(AppConfig.getResourceBundle().getString("label.codec"));
+        Label codecLabel = new Label(LocalizationUtil.getString("label.codec"));
         codecComboBox = new ComboBox<>();
         codecComboBox.getItems().addAll("H.264", "H.265", "VP9", "AV1");
         codecComboBox.setValue("H.264");
 
-        Label bitrateLabel = new Label(AppConfig.getResourceBundle().getString("label.bitrate"));
+        Label bitrateLabel = new Label(LocalizationUtil.getString("label.bitrate"));
         bitrateField = new TextField();
 
-        Label volumeLabel = new Label(AppConfig.getResourceBundle().getString("label.volume"));
+        Label volumeLabel = new Label(LocalizationUtil.getString("label.volume"));
         volumeSlider = new Slider(0, 100, 100);
 
-        Label frameRateLabel = new Label(AppConfig.getResourceBundle().getString("label.frameRate"));
+        Label frameRateLabel = new Label(LocalizationUtil.getString("label.frameRate"));
         frameRateField = new TextField();
 
-        Label resolutionLabel = new Label(AppConfig.getResourceBundle().getString("label.resolution"));
+        Label resolutionLabel = new Label(LocalizationUtil.getString("label.resolution"));
         resolutionField = new TextField();
 
-        Label audioChannelLabel = new Label(AppConfig.getResourceBundle().getString("label.audioChannels"));
+        Label audioChannelLabel = new Label(LocalizationUtil.getString("label.audioChannels"));
         audioChannelComboBox = new ComboBox<>();
         audioChannelComboBox.getItems().addAll("Mono", "Stereo", "5.1", "7.1");
         audioChannelComboBox.setValue("Stereo");

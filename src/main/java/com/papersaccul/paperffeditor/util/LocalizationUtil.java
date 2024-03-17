@@ -20,10 +20,9 @@ public class LocalizationUtil {
      */
     public static String getString(String key) {
         try {
-            ResourceBundle resourceBundle = AppConfig.getResourceBundle();
-            return resourceBundle.getString(key);
+            return AppConfig.getResourceBundle().getString(key);
         } catch (MissingResourceException e) {
-            System.err.println("Missing resource: " + key);
+            System.err.println("\n\n\n\n\nMissing resource: " + key + "\n");
             return key;
         }
     }

@@ -7,6 +7,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
 import com.papersaccul.paperffeditor.AppConfig;
+import com.papersaccul.paperffeditor.util.LocalizationUtil;
+
 import java.io.File;
 
 /**
@@ -29,16 +31,16 @@ public class FileSelectionPanel extends GridPane {
         this.setHgap(10);
         this.setVgap(10);
 
-        Label inputLabel = new Label(AppConfig.getResourceBundle().getString("label.inputFile"));
+        Label inputLabel = new Label(LocalizationUtil.getString("label.inputFile"));
         inputFilePathField = new TextField();
         inputFilePathField.setEditable(false);
-        Button inputBrowseButton = new Button(AppConfig.getResourceBundle().getString("button.browse"));
+        Button inputBrowseButton = new Button(LocalizationUtil.getString("button.browse"));
         inputBrowseButton.setOnAction(e -> chooseFile(inputFilePathField, true));
 
-        Label outputLabel = new Label(AppConfig.getResourceBundle().getString("label.outputFile"));
+        Label outputLabel = new Label(LocalizationUtil.getString("label.outputFile"));
         outputFilePathField = new TextField();
         outputFilePathField.setEditable(false);
-        Button outputBrowseButton = new Button(AppConfig.getResourceBundle().getString("button.browse"));
+        Button outputBrowseButton = new Button(LocalizationUtil.getString("button.browse"));
         outputBrowseButton.setOnAction(e -> chooseFile(outputFilePathField, false));
 
         this.add(inputLabel, 0, 0);
@@ -56,7 +58,7 @@ public class FileSelectionPanel extends GridPane {
      */
     private void chooseFile(TextField textField, boolean isInputFile) {
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle(AppConfig.getResourceBundle().getString(isInputFile ? "fileChooser.inputTitle" : "fileChooser.outputTitle"));
+        fileChooser.setTitle(LocalizationUtil.getString(isInputFile ? "fileChooser.inputTitle" : "fileChooser.outputTitle"));
         if (isInputFile) {
             File selectedFile = fileChooser.showOpenDialog(this.getScene().getWindow());
             if (selectedFile != null) {
