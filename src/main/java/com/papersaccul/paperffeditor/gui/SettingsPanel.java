@@ -6,7 +6,6 @@ import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ComboBox;
 import javafx.scene.layout.GridPane;
-import com.papersaccul.paperffeditor.AppConfig;
 import com.papersaccul.paperffeditor.util.LocalizationUtil;
 
 /**

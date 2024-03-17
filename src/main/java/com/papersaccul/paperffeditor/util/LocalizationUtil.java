@@ -4,7 +4,6 @@ import com.papersaccul.paperffeditor.AppConfig;
 
 import java.util.Locale;
 import java.util.MissingResourceException;
-import java.util.ResourceBundle;
 
 /**
  * Utility class for localization. Simplifies resource bundle access
@@ -22,7 +21,7 @@ public class LocalizationUtil {
         try {
             return AppConfig.getResourceBundle().getString(key);
         } catch (MissingResourceException e) {
-            System.err.println("\n\n\n\n\nMissing resource: " + key + "\n");
+            System.err.println("Missing resource: " + key);
             return key;
         }
     }

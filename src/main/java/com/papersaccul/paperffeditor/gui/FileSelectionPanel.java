@@ -6,7 +6,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
-import com.papersaccul.paperffeditor.AppConfig;
 import com.papersaccul.paperffeditor.util.LocalizationUtil;
 
 import java.io.File;

@@ -1,0 +1,79 @@
+.root {
+    font-family: 'Arial', sans-serif;
+    -fx-font-family: 'Arial', sans-serif;
+    -fx-base: #2E3440;
+}
+
+.main-window {
+    padding: 20px;
+    -fx-padding: 20;
+    -fx-spacing: 10;
+}
+
+.panel {
+    background-color: #3B4252;
+    -fx-background-color: #3B4252;
+    border-color: #4C566A;
+    -fx-border-color: #4C566A;
+    border-width: 1;
+    -fx-border-width: 1;
+    padding: 10;
+    -fx-padding: 10;
+    -fx-spacing: 10;
+}
+
+.file-selection-panel {
+    background-color: #434C5E;
+    -fx-background-color: #434C5E;
+}
+
+.settings-panel {
+    background-color: #4C566A;
+    -fx-background-color: #4C566A;
+}
+
+.task-monitor-panel {
+    background-color: #4C566A;
+    -fx-background-color: #4C566A;
+}
+
+.info-display-panel {
+    background-color: #4C566A;
+    -fx-background-color: #4C566A;
+}
+
+.button {
+    background-color: #A3BE8C;
+    -fx-background-color: #A3BE8C;
+    -fx-text-fill: white;
+    font-weight: bold;
+    -fx-font-weight: bold;
+}
+
+.button:hover {
+    background-color: #B48EAD;
+    -fx-background-color: #B48EAD;
+}
+
+.text-field {
+    border-color: #4C566A;
+    -fx-border-color: #4C566A;
+}
+
+.label {
+    -fx-text-fill: #D8DEE9;
+}
+
+.error-message {
+    -fx-text-fill: #BF616A;
+    font-weight: bold;
+    -fx-font-weight: bold;
+}
+
+.success-message {
+    -fx-text-fill: #A3BE8C;
+    font-weight: bold;
+    -fx-font-weight: bold;
+}
+
+

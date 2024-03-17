@@ -5,6 +5,8 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import com.papersaccul.paperffeditor.gui.MainWindow;
 
+import atlantafx.base.theme.NordDark;
+
 /**
  * The main class for the PaperFFmedia project.
  * This class launches the JavaFX application.
@@ -28,8 +30,14 @@ public class Main extends Application {
     public void start(Stage primaryStage) {
         MainWindow mainWindow = new MainWindow();
         Scene scene = new Scene(mainWindow, 800, 600);
-        
-        primaryStage.setTitle("PaperFFmedia - FFmpeg GUI");
+
+        // Old theme
+        //scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());  
+
+        // super-mega-duper theme by mkpaz - atlantafx
+        Application.setUserAgentStylesheet(new NordDark().getUserAgentStylesheet());
+
+        primaryStage.setTitle("PaperFFeditor - FFmpeg GUI");
         primaryStage.setScene(scene);
         //primaryStage.getIcons().add(new javafx.scene.image.Image("file:src/main/resources/icon.png"));
         primaryStage.show();
