@@ -2,17 +2,20 @@ package com.papersaccul.paperffeditor;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.stage.Stage;
 import com.papersaccul.paperffeditor.gui.MainWindow;
+import com.papersaccul.paperffeditor.util.FFmpegCommandBuilder;
+import com.papersaccul.paperffeditor.model.VideoSettings;
 
 import atlantafx.base.theme.NordDark;
+//import atlantafx.base.theme.NordLight;
 
 /**
  * The main class for the PaperFFmedia project.
- * This class launches the JavaFX application.
+ * This class launches the JavaFX application and adds start button logic for FFmpeg rendering.
  */
 public class Main extends Application {
-
     /**
      * The main entry point for the application.
      * @param args the command line arguments
@@ -23,7 +26,7 @@ public class Main extends Application {
 
 
     /**
-     * Starts the JavaFX application and sets up the main window.
+     * Starts the JavaFX application, sets up the main window, and adds start button logic for FFmpeg rendering.
      * @param primaryStage the primary stage for this application
      */
     @Override
@@ -36,6 +39,7 @@ public class Main extends Application {
 
         // super-mega-duper theme by mkpaz - atlantafx
         Application.setUserAgentStylesheet(new NordDark().getUserAgentStylesheet());
+
 
         primaryStage.setTitle("PaperFFeditor - FFmpeg GUI");
         primaryStage.setScene(scene);

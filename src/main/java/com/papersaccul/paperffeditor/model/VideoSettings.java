@@ -1,33 +1,94 @@
 package com.papersaccul.paperffeditor.model;
 
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
+import com.papersaccul.paperffeditor.gui.TaskMonitorPanel;
+import com.papersaccul.paperffeditor.util.FFmpegCommandBuilder;
+
 /**
  * VideoSettings class encapsulates the settings for video processing.
  */
 public class VideoSettings {
-    private String codec;
+    private String videoCodec;
+    private String audioCodec;
     private int bitrate;
     private double volume;
     private int frameRate;
     private String resolution;
     private String audioChannels;
+    private String inputFilePath; 
+    private String outputFilePath; 
 
     public VideoSettings() {
-        // Default settings
-        this.codec = "H.264";
-        this.bitrate = 1000; // Default bitrate in kbps
-        this.volume = 100; // Default volume percentage
-        this.frameRate = 30; // Default frame rate
-        this.resolution = "1920x1080"; // Default resolution
-        this.audioChannels = "Stereo"; // Default audio channel configuration
+        // Default settings are now set based on input file information
+        this.inputFilePath = "";
+        setDefaultSettingsBasedOnInputFile(this.inputFilePath);
+    }
+
+    private void setDefaultSettingsBasedOnInputFile(String inputFilePath) {
+        // Use FFmpegCommandBuilder to get video information for each detail
+        this.videoCodec = FFmpegCommandBuilder.getVideoInfo(inputFilePath, "videoCodec");
+        this.audioCodec = FFmpegCommandBuilder.getVideoInfo(inputFilePath, "audioCodec");
+        String bitrateStr = FFmpegCommandBuilder.getVideoInfo(inputFilePath, "bitrate").replaceAll("[^0-9]", "");
+        this.bitrate = bitrateStr.isEmpty() ? 3000 : Integer.parseInt(bitrateStr);
+        this.volume = 100; // Volume is not extracted from videoInfo, default to 100
+        String frameRateStr = FFmpegCommandBuilder.getVideoInfo(inputFilePath, "frameRate").replaceAll("[^0-9]", "");
+        this.frameRate = frameRateStr.isEmpty() ? 30 : Integer.parseInt(frameRateStr);
+        this.resolution = FFmpegCommandBuilder.getVideoInfo(inputFilePath, "resolution");
+        this.audioChannels = "Stereo"; // Audio channels are not extracted from videoInfo, default to Stereo
+        this.outputFilePath = "";
+        notifyObservers();
+    }
+
+    // Observer
+    public interface VideoSettingsObserver {
+        void updateVideoSettingsInfo(VideoSettings videoSettings);
+    }
+
+    private List<VideoSettingsObserver> observers = new ArrayList<>();
+
+    
+    public void addObserver(VideoSettingsObserver observer) {
+        observers.add(observer);
+    }
+
+    public void removeObserver(VideoSettingsObserver observer) {
+        observers.remove(observer);
+    }
+
+    private void notifyObservers() {
+        for (VideoSettingsObserver observer : observers) {
+            observer.updateVideoSettingsInfo(this);
+        }
+    }
+
+    private void setField(String fieldName, Object value) {
+        try {
+            Field field = this.getClass().getDeclaredField(fieldName);
+            field.setAccessible(true);
+            field.set(this, value);
+            notifyObservers();
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
     }
 
     // Getters and Setters
-    public String getCodec() {
-        return codec;
+    public String getVideoCodec() {
+        return videoCodec;
     }
 
-    public void setCodec(String codec) {
-        this.codec = codec;
+    public void setVideoCodec(String videoCodec) {
+        setField("videoCodec", videoCodec);
+    }
+
+    public String getAudioCodec() {
+        return audioCodec;
+    }
+
+    public void setAudioCodec(String audioCodec) {
+        setField("audioCodec", audioCodec);
     }
 
     public int getBitrate() {
@@ -35,7 +96,7 @@ public class VideoSettings {
     }
 
     public void setBitrate(int bitrate) {
-        this.bitrate = bitrate;
+        setField("bitrate", bitrate);
     }
 
     public double getVolume() {
@@ -43,7 +104,7 @@ public class VideoSettings {
     }
 
     public void setVolume(double volume) {
-        this.volume = volume;
+        setField("volume", volume);
     }
 
     public int getFrameRate() {
@@ -51,7 +112,7 @@ public class VideoSettings {
     }
 
     public void setFrameRate(int frameRate) {
-        this.frameRate = frameRate;
+        setField("frameRate", frameRate);
     }
 
     public String getResolution() {
@@ -59,7 +120,7 @@ public class VideoSettings {
     }
 
     public void setResolution(String resolution) {
-        this.resolution = resolution;
+        setField("resolution", resolution);
     }
 
     public String getAudioChannels() {
@@ -67,18 +128,40 @@ public class VideoSettings {
     }
 
     public void setAudioChannels(String audioChannels) {
-        this.audioChannels = audioChannels;
+        setField("audioChannels", audioChannels);
     }
 
+    public String getInputFilePath() {
+        return inputFilePath;
+    }
+
+    public void setInputFilePath(String inputFilePath) {
+        this.inputFilePath = inputFilePath;
+        setDefaultSettingsBasedOnInputFile(inputFilePath);
+    }
+
+    public String getOutputFilePath() { 
+        return outputFilePath;
+    }
+
+    public void setOutputFilePath(String outputFilePath) {
+        setField("outputFilePath", outputFilePath);
+    }
+
+    // I forgot about this method and went the observer pattern way. 
     @Override
     public String toString() {
         return "VideoSettings{" +
-                "codec='" + codec + '\'' +
+                "audioCodec='" + audioCodec + '\'' +
+                ", videoCodec=" + videoCodec + '\'' +
                 ", bitrate=" + bitrate +
                 ", volume=" + volume +
                 ", frameRate=" + frameRate +
                 ", resolution='" + resolution + '\'' +
                 ", audioChannels='" + audioChannels + '\'' +
+                ", inputFilePath='" + inputFilePath + '\'' + 
+                ", outputFilePath='" + outputFilePath + '\'' + 
                 '}';
     }
 }
+

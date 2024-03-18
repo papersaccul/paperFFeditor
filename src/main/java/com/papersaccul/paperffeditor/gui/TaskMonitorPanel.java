@@ -6,20 +6,23 @@ import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.GridPane;
 import com.papersaccul.paperffeditor.model.TaskStatus;
 import com.papersaccul.paperffeditor.model.VideoSettings;
+import com.papersaccul.paperffeditor.model.VideoSettings.VideoSettingsObserver;
 
 /**
  * TaskMonitorPanel class represents the panel for monitoring tasks in the application.
  * It displays the progress and status of ongoing tasks.
  */
-public class TaskMonitorPanel extends GridPane {
+public class TaskMonitorPanel extends GridPane implements VideoSettingsObserver {
 
     private ProgressBar progressBar;
     private Label statusLabel;
     private Label inputFileLabel;
     private Label outputFileLabel;
     private Label videoSettingsLabel;
+    private VideoSettings videoSettings;
 
-    public TaskMonitorPanel() {
+    public TaskMonitorPanel(VideoSettings videoSettings) {
+        this.videoSettings = videoSettings;
         initUI();
     }
 
@@ -81,11 +84,29 @@ public class TaskMonitorPanel extends GridPane {
      * 
      * @param videoSettings The VideoSettings object containing the settings.
      */
+
+    @Override
     public void updateVideoSettingsInfo(VideoSettings videoSettings) {
         if (videoSettings != null) {
-            String settingsInfo = String.format("Resolution: %s, Bitrate: %s, Frame Rate: %s",
-                    videoSettings.getResolution(), videoSettings.getBitrate(), videoSettings.getFrameRate());
+            String settingsInfo = String.format(
+                    "Resolution: %s\n" +
+                    "Bitrate: %s kbps\n" +
+                    "Frame Rate: %s fps\n" +
+                    "Video Codec: %s\n" +
+                    "Audio Codec: %s\n" +
+                    "Volume: %s%%\n" +
+                    "Audio Channels: %s",
+                    videoSettings.getResolution(), 
+                    videoSettings.getBitrate(), 
+                    videoSettings.getFrameRate(),
+                    videoSettings.getVideoCodec(),
+                    videoSettings.getAudioCodec(),
+                    videoSettings.getVolume(),
+                    videoSettings.getAudioChannels()
+                    );
             videoSettingsLabel.setText(settingsInfo);
+            updateInputFileInfo(videoSettings.getInputFilePath());
+            updateOutputFileInfo(videoSettings.getOutputFilePath());
         } else {
             videoSettingsLabel.setText("Default settings");
         }

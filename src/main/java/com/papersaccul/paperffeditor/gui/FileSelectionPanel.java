@@ -7,6 +7,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
 import com.papersaccul.paperffeditor.util.LocalizationUtil;
+import com.papersaccul.paperffeditor.model.VideoSettings;
 
 import java.io.File;
 
@@ -17,8 +18,10 @@ public class FileSelectionPanel extends GridPane {
 
     private TextField inputFilePathField;
     private TextField outputFilePathField;
+    private VideoSettings videoSettings;
 
-    public FileSelectionPanel() {
+    public FileSelectionPanel(VideoSettings videoSettings) {
+        this.videoSettings = videoSettings;
         initUI();
     }
 
@@ -32,13 +35,13 @@ public class FileSelectionPanel extends GridPane {
 
         Label inputLabel = new Label(LocalizationUtil.getString("label.inputFile"));
         inputFilePathField = new TextField();
-        inputFilePathField.setEditable(false);
+        inputFilePathField.textProperty().addListener((observable, oldValue, newValue) -> videoSettings.setInputFilePath(newValue));
         Button inputBrowseButton = new Button(LocalizationUtil.getString("button.browse"));
         inputBrowseButton.setOnAction(e -> chooseFile(inputFilePathField, true));
 
         Label outputLabel = new Label(LocalizationUtil.getString("label.outputFile"));
         outputFilePathField = new TextField();
-        outputFilePathField.setEditable(false);
+        outputFilePathField.textProperty().addListener((observable, oldValue, newValue) -> videoSettings.setOutputFilePath(newValue));
         Button outputBrowseButton = new Button(LocalizationUtil.getString("button.browse"));
         outputBrowseButton.setOnAction(e -> chooseFile(outputFilePathField, false));
 
@@ -69,5 +72,15 @@ public class FileSelectionPanel extends GridPane {
                 textField.setText(savedFile.getAbsolutePath());
             }
         }
+    }
+
+    // Method to get the input file path field
+    public TextField getInputFilePathField() {
+        return inputFilePathField;
+    }
+
+    // Method to get the output file path field
+    public TextField getOutputFilePathField() {
+        return outputFilePathField;
     }
 }

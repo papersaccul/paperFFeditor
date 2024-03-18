@@ -7,6 +7,7 @@ import javafx.scene.control.TabPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 
+import com.papersaccul.paperffeditor.model.VideoSettings;
 import com.papersaccul.paperffeditor.util.LocalizationUtil;
 
 /**
@@ -14,6 +15,8 @@ import com.papersaccul.paperffeditor.util.LocalizationUtil;
  * It sets up the GUI structure including tabs for different functionalities.
  */
 public class MainWindow extends BorderPane {
+
+    private VideoSettings videoSettings = new VideoSettings();
 
     public MainWindow() {
         // Initialize the main layout components
@@ -30,15 +33,17 @@ public class MainWindow extends BorderPane {
         // Create tabs for different functionalities
         Tab fileSelectionTab = new Tab(LocalizationUtil.getString("tab.fileSelection"));
         fileSelectionTab.setClosable(false);
-        fileSelectionTab.setContent(new FileSelectionPanel());
+        fileSelectionTab.setContent(new FileSelectionPanel(videoSettings));
         
         Tab settingsTab = new Tab(LocalizationUtil.getString("tab.settings"));
         settingsTab.setClosable(false);
-        settingsTab.setContent(new SettingsPanel());
+        settingsTab.setContent(new SettingsPanel(videoSettings));
         
         Tab taskMonitorTab = new Tab(LocalizationUtil.getString("tab.taskMonitor"));
         taskMonitorTab.setClosable(false);
-        taskMonitorTab.setContent(new TaskMonitorPanel());
+        TaskMonitorPanel taskMonitorPanel = new TaskMonitorPanel(videoSettings);
+        taskMonitorTab.setContent(taskMonitorPanel);
+        videoSettings.addObserver(taskMonitorPanel);
         
         // Add tabs to the TabPane
         tabPane.getTabs().addAll(fileSelectionTab, settingsTab, taskMonitorTab);
