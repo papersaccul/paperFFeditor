@@ -3,7 +3,6 @@ package com.papersaccul.paperffeditor.model;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
-import com.papersaccul.paperffeditor.gui.TaskMonitorPanel;
 import com.papersaccul.paperffeditor.util.FFmpegCommandBuilder;
 
 /**
@@ -23,10 +22,11 @@ public class VideoSettings {
     public VideoSettings() {
         // Default settings are now set based on input file information
         this.inputFilePath = "";
-        setDefaultSettingsBasedOnInputFile(this.inputFilePath);
+        setDefaultSettingsOnInputFile(this.inputFilePath);
+        notifyObservers();
     }
 
-    private void setDefaultSettingsBasedOnInputFile(String inputFilePath) {
+    private void setDefaultSettingsOnInputFile(String inputFilePath) {
         // Use FFmpegCommandBuilder to get video information for each detail
         this.videoCodec = FFmpegCommandBuilder.getVideoInfo(inputFilePath, "videoCodec");
         this.audioCodec = FFmpegCommandBuilder.getVideoInfo(inputFilePath, "audioCodec");
@@ -137,7 +137,7 @@ public class VideoSettings {
 
     public void setInputFilePath(String inputFilePath) {
         this.inputFilePath = inputFilePath;
-        setDefaultSettingsBasedOnInputFile(inputFilePath);
+        setDefaultSettingsOnInputFile(inputFilePath);
     }
 
     public String getOutputFilePath() { 

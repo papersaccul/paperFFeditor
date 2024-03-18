@@ -19,10 +19,8 @@ public class TaskMonitorPanel extends GridPane implements VideoSettingsObserver 
     private Label inputFileLabel;
     private Label outputFileLabel;
     private Label videoSettingsLabel;
-    private VideoSettings videoSettings;
 
-    public TaskMonitorPanel(VideoSettings videoSettings) {
-        this.videoSettings = videoSettings;
+    public TaskMonitorPanel() {
         initUI();
     }
 

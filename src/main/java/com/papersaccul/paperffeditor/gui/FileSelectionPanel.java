@@ -1,6 +1,7 @@
 package com.papersaccul.paperffeditor.gui;
 
 import javafx.geometry.Insets;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -19,6 +20,7 @@ public class FileSelectionPanel extends GridPane {
     private TextField inputFilePathField;
     private TextField outputFilePathField;
     private VideoSettings videoSettings;
+    private Label inputVideoSettingsLabel;
 
     public FileSelectionPanel(VideoSettings videoSettings) {
         this.videoSettings = videoSettings;
@@ -51,6 +53,9 @@ public class FileSelectionPanel extends GridPane {
         this.add(outputLabel, 0, 1);
         this.add(outputFilePathField, 1, 1);
         this.add(outputBrowseButton, 2, 1);
+        this.add(new Label("Video Settings:"), 0, 2);
+        inputVideoSettingsLabel = new Label();
+        this.add(inputVideoSettingsLabel, 1, 2);
     }
 
     /**

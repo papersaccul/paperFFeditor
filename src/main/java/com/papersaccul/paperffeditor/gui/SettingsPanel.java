@@ -8,6 +8,8 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.layout.GridPane;
 import com.papersaccul.paperffeditor.util.LocalizationUtil;
 import com.papersaccul.paperffeditor.model.VideoSettings;
+import com.papersaccul.paperffeditor.model.VideoSettings.VideoSettingsObserver;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -15,7 +17,7 @@ import java.io.InputStreamReader;
 /**
  * SettingsPanel class provides the GUI elements for configuring video and audio settings.
  */
-public class SettingsPanel extends GridPane {
+public class SettingsPanel extends GridPane implements VideoSettingsObserver {
 
     private TextField bitrateField;
     private Slider volumeSlider;
@@ -81,7 +83,7 @@ public class SettingsPanel extends GridPane {
         audioCodecComboBox = new ComboBox<>();
     
         
-        // Parse video codecs from ffmpeg
+        // Parse codecs from ffmpeg
         try {
             String command = "ffmpeg -codecs";
             Process process = Runtime.getRuntime().exec(command);
@@ -122,5 +124,27 @@ public class SettingsPanel extends GridPane {
         this.add(audioChannelLabel, 0, 6);
         this.add(audioChannelComboBox, 1, 6);
         
+    }
+
+    @Override
+    public void updateVideoSettingsInfo(VideoSettings videoSettings) {
+        if (videoSettings != null) {
+            videoCodecComboBox.setValue(videoSettings.getVideoCodec());
+            audioCodecComboBox.setValue(videoSettings.getAudioCodec());
+            bitrateField.setText(String.valueOf(videoSettings.getBitrate()));
+            volumeSlider.setValue(videoSettings.getVolume());
+            frameRateField.setText(String.valueOf(videoSettings.getFrameRate()));
+            resolutionField.setText(videoSettings.getResolution());
+            audioChannelComboBox.setValue(videoSettings.getAudioChannels());
+        } else {
+            // Set default values or clear the fields
+            videoCodecComboBox.setValue("H.264");
+            audioCodecComboBox.setValue("AAC");
+            bitrateField.setText("");
+            volumeSlider.setValue(100);
+            frameRateField.setText("");
+            resolutionField.setText("");
+            audioChannelComboBox.setValue("Stereo");
+        }
     }
 }
