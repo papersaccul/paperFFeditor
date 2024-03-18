@@ -27,41 +27,41 @@ public class FFmpegCommandBuilder {
         StringBuilder command = new StringBuilder("ffmpeg -i ");
         command.append(quote(inputFilePath));
         
-        // Video Codec
+// Video Codec
         if (settings.getVideoCodec() != null && !settings.getVideoCodec().isEmpty()) {
             command.append(" -c:v ").append(settings.getVideoCodec());
         }
 
-        // Audio Codec
+// Audio Codec
         if (settings.getAudioCodec() != null && !settings.getAudioCodec().isEmpty()) {
             command.append(" -c:a ").append(settings.getAudioCodec());
         }
         
-        // Video Bitrate
-        if (settings.getVideoBitrate() > 0) {
+// Video Bitrate
+        if (Integer.parseInt(settings.getVideoBitrate()) > 0) {
             command.append(" -b:v ").append(settings.getVideoBitrate()).append("k");
         }
-        // Audio Bitrate
-        if (settings.getAudioBitrate() > 0) {
+// Audio Bitrate
+        if (Integer.parseInt(settings.getAudioBitrate()) > 0) {
             command.append(" -b:a ").append(settings.getAudioBitrate()).append("k");
         }
         
-        // Volume
+// Volume
         if (settings.getVolume() != 100) { // Assuming 100 is the default volume percentage
             command.append(" -filter:a \"volume=").append(settings.getVolume()).append("%\"");
         }
         
-        // Frame rate
-        if (settings.getFrameRate() > 0) {
+// Frame rate
+        if (Integer.parseInt(settings.getFrameRate()) > 0) {
             command.append(" -r ").append(settings.getFrameRate());
         }
         
-        // Resolution
+// Resolution
         if (settings.getVideoWidth() != null && !settings.getVideoWidth().isEmpty() && settings.getVideoHeight() != null && !settings.getVideoHeight().isEmpty()) {
             command.append(" -s ").append(settings.getVideoWidth()).append("x").append(settings.getVideoHeight());
         }
         
-        // Audio Channels
+// Audio Channels
         if (settings.getAudioChannels() != null && !settings.getAudioChannels().isEmpty()) {
             command.append(" -ac ").append(convertAudioChannelsToNumber(settings.getAudioChannels()));
         }
@@ -112,9 +112,10 @@ public class FFmpegCommandBuilder {
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
             String line;
             while ((line = reader.readLine()) != null) {
-                if (line.contains("Stream #0:0")) { // Video stream
+
+        // Video stream
+                if (line.contains("Stream #0:0")) { 
                     videoDetails.put("videoCodec", cleanCodecName(extractDetail(line, "Video: ")));
-                    // drawingMethodDetail doesn't work correctly, use only for logic
                     String drawingMethodDetail = extractDetail(line, "Video: ", "(").trim();
                     videoDetails.put("drawingMethod", drawingMethodDetail);
                     String resolutionDetail = extractDetail(line, "),", "[SAR");
@@ -125,22 +126,19 @@ public class FFmpegCommandBuilder {
                     if (resolutionParts.length == 2) {
        
                         String width = resolutionParts[0].substring(resolutionParts[0].lastIndexOf(" ")).trim();
-                        videoDetails.put("width", width);
-                        videoDetails.put("height", resolutionParts[1].split(" ")[0].trim()); 
+                        videoDetails.put("videoWidth", width);
+                        videoDetails.put("videoHeight", resolutionParts[1].split(" ")[0].trim()); 
                     }
-                    videoDetails.put("frameRate", extractDetail(line, "fps"));
-                } else if (line.contains("Stream #0:1")) { // Audio stream
+
+                    String frameRateDetail = extractFrameRate(line);
+                    videoDetails.put("frameRate", frameRateDetail);
+        // Audio stream
+                } else if (line.contains("Stream #0:1")) { 
                     videoDetails.put("audioCodec", cleanCodecName(extractDetail(line, "Audio: ")));
                     videoDetails.put("audioChannels", extractDetail(line, "Audio: ", ","));
-                    // Parse audio bitrate
-                    String audioBitrateDetail = extractDetail(line, "Audio: ", ",");
-                    String[] audioBitrateParts = audioBitrateDetail.split(",");
-                    for (String part : audioBitrateParts) {
-                        if (part.trim().endsWith("kb/s")) {
-                            videoDetails.put("audioBitrate", part.trim());
-                            break;
-                        }
-                    }
+
+                    String audioBitrateDetail = extractAudioBitrate(line);
+                    videoDetails.put("audioBitrate", audioBitrateDetail);
                 } else if (line.contains("bitrate:")) {
                     videoDetails.put("videoBitrate", extractDetail(line, "bitrate: "));
                 }
@@ -151,42 +149,43 @@ public class FFmpegCommandBuilder {
         return videoDetails.getOrDefault(detail, "Detail not found");
     }
     
-    /**
-     * Cleans the codec name by removing any trailing commas.
-     * 
-     * @param codecName the codec name to clean
-     * @return the cleaned codec name
-     */
+    private static String extractFrameRate(String line) {
+        String[] parts = line.split(",");
+        for (String part : parts) {
+            if (part.trim().contains("fps")) {
+                return part.trim().split(" ")[0];
+            }
+        }
+        return "Detail not found";
+    }
+    
     private static String cleanCodecName(String codecName) {
         return codecName.endsWith(",") ? codecName.substring(0, codecName.length() - 1) : codecName;
     }
     
-    /**
-     * Extracts specific detail from a line of ffmpeg output
-     * 
-     * @param line the line of text to parse
-     * @param startAfter the text immediately before the detail to extract
-     * @return the extracted detail as a string
-     */
     private static String extractDetail(String line, String startAfter) {
         int startIndex = line.indexOf(startAfter) + startAfter.length();
         int endIndex = line.indexOf(" ", startIndex);
         return line.substring(startIndex, endIndex == -1 ? line.length() : endIndex);
     }
     
-    /**
-     * Overloaded method to extract resolution which has a unique format
-     * 
-     * @param line the line of text to parse
-     * @param startAfter the text immediately before the detail to extract
-     * @param delimiter the delimiter used in the detail (e.g., "x" in resolution)
-     * @return the extracted detail as a string
-     */
     private static String extractDetail(String line, String startAfter, String delimiter) {
         int startIndex = line.indexOf(startAfter) + startAfter.length();
         int endIndex = line.indexOf(delimiter, startIndex) + delimiter.length();
         endIndex += line.substring(endIndex).indexOf(" ");
         return line.substring(startIndex, endIndex == -1 ? line.length() : endIndex);
     }
+
+    private static String extractAudioBitrate(String line) {
+        String[] parts = line.split(",");
+        for (String part : parts) {
+            if (part.trim().contains("kb/s")) {
+                return part.trim().split(" ")[0];
+            }
+        }
+        return "Detail not found";
+    }
 }
+
+
 

@@ -11,10 +11,10 @@ import com.papersaccul.paperffeditor.util.FFmpegCommandBuilder;
 public class VideoSettings {
     private String videoCodec;
     private String audioCodec;
-    private int videoBitrate;
-    private int audioBitrate;
+    private String videoBitrate;
+    private String audioBitrate;
     private double volume;
-    private int frameRate;
+    private String frameRate;
     private String resolution;
     private String videoWidth;
     private String videoHeight;
@@ -34,18 +34,32 @@ public class VideoSettings {
         // Use FFmpegCommandBuilder to get video information for each detail
         this.videoCodec = FFmpegCommandBuilder.getVideoInfo(inputFilePath, "videoCodec");
         this.audioCodec = FFmpegCommandBuilder.getVideoInfo(inputFilePath, "audioCodec");
-        String videoBitrateStr = FFmpegCommandBuilder.getVideoInfo(inputFilePath, "videoBitrate").replaceAll("[^0-9]", "");
-        this.videoBitrate = videoBitrateStr.isEmpty() ? 3000 : Integer.parseInt(videoBitrateStr);
-        String audioBitrateStr = FFmpegCommandBuilder.getVideoInfo(inputFilePath, "audioBitrate").replaceAll("[^0-9]", "");
-        this.audioBitrate = audioBitrateStr.isEmpty() ? 3000 : Integer.parseInt(audioBitrateStr);
-        this.volume = 100; // Volume is not extracted from videoInfo, default to 100
-        String frameRateStr = FFmpegCommandBuilder.getVideoInfo(inputFilePath, "frameRate").replaceAll("[^0-9]", "");
-        this.frameRate = frameRateStr.isEmpty() ? 30 : Integer.parseInt(frameRateStr);
-        this.videoWidth = FFmpegCommandBuilder.getVideoInfo(inputFilePath, "width");
-        this.videoHeight = FFmpegCommandBuilder.getVideoInfo(inputFilePath, "height");
+
+        //String videoBitrateStr = FFmpegCommandBuilder.getVideoInfo(inputFilePath, "videoBitrate").replaceAll("[^0-9]", "");
+        this.videoBitrate = FFmpegCommandBuilder.getVideoInfo(inputFilePath, "videoBitrate");
+
+        //String audioBitrateStr = FFmpegCommandBuilder.getVideoInfo(inputFilePath, "audioBitrate").replaceAll("[^0-9]", "");
+        this.audioBitrate = FFmpegCommandBuilder.getVideoInfo(inputFilePath, "audioBitrate");
+        System.out.println("audioBitrate: " + audioBitrate);
+        System.out.println("videoBitrate: " + videoBitrate);
+        System.out.println("frameRate: " + frameRate);
+        this.volume = 100; // default to 100
+
+        //String frameRateStr = FFmpegCommandBuilder.getVideoInfo(inputFilePath, "frameRate").replaceAll("[^0-9]", "");
+        this.frameRate = FFmpegCommandBuilder.getVideoInfo(inputFilePath, "frameRate").isEmpty() ? "30" : FFmpegCommandBuilder.getVideoInfo(inputFilePath, "frameRate");
+
+        this.videoWidth = FFmpegCommandBuilder.getVideoInfo(inputFilePath, "videoWidth");
+        this.videoHeight = FFmpegCommandBuilder.getVideoInfo(inputFilePath, "videoHeight");
         this.drawingMethod = FFmpegCommandBuilder.getVideoInfo(inputFilePath, "drawingMethod");
-        this.audioChannels = "Stereo"; // Audio channels are not extracted from videoInfo, default to Stereo
-        this.outputFilePath = "";
+        this.audioChannels = "Stereo"; // todo
+
+        if (inputFilePath != "") {
+        int dotIndex = inputFilePath.lastIndexOf('.');
+        String baseName = inputFilePath.substring(0, dotIndex);
+        String extension = inputFilePath.substring(dotIndex);
+        this.outputFilePath = baseName + "_out" + extension;
+        } else this.outputFilePath = "1";
+
         notifyObservers();
     }
 
@@ -99,19 +113,19 @@ public class VideoSettings {
         setField("audioCodec", audioCodec);
     }
 
-    public int getVideoBitrate() {
+    public String getVideoBitrate() {
         return videoBitrate;
     }
 
-    public void setVideoBitrate(int videoBitrate) {
+    public void setVideoBitrate(String videoBitrate) {
         setField("videoBitrate", videoBitrate);
     }
 
-    public int getAudioBitrate() {
+    public String getAudioBitrate() {
         return audioBitrate;
     }
 
-    public void setAudioBitrate(int audioBitrate) {
+    public void setAudioBitrate(String audioBitrate) {
         setField("audioBitrate", audioBitrate);
     }
 
@@ -123,11 +137,11 @@ public class VideoSettings {
         setField("volume", volume);
     }
 
-    public int getFrameRate() {
+    public String getFrameRate() {
         return frameRate;
     }
 
-    public void setFrameRate(int frameRate) {
+    public void setFrameRate(String frameRate) {
         setField("frameRate", frameRate);
     }
 
@@ -145,7 +159,7 @@ public class VideoSettings {
     }
 
     public void setVideoHeight(String videoHeight) {
-        setField("resolution", videoHeight);
+        setField("videoHeight", videoHeight);
     }
 
     public String getVideoWidth() {
@@ -153,7 +167,7 @@ public class VideoSettings {
     }
 
     public void setVideoWidth(String videoWidth) {
-        setField("resolution", videoWidth);
+        setField("videoWidth", videoWidth);
     }
 
     public String getAudioChannels() {

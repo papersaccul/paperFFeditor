@@ -9,13 +9,14 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
 import com.papersaccul.paperffeditor.util.LocalizationUtil;
 import com.papersaccul.paperffeditor.model.VideoSettings;
+import com.papersaccul.paperffeditor.model.VideoSettings.VideoSettingsObserver;
 
 import java.io.File;
 
 /**
  * FileSelectionPanel class provides the GUI elements for file selection.
  */
-public class FileSelectionPanel extends GridPane {
+public class FileSelectionPanel extends GridPane implements VideoSettingsObserver {
 
     private TextField inputFilePathField;
     private TextField outputFilePathField;
@@ -37,15 +38,31 @@ public class FileSelectionPanel extends GridPane {
 
         Label inputLabel = new Label(LocalizationUtil.getString("label.inputFile"));
         inputFilePathField = new TextField();
-        inputFilePathField.textProperty().addListener((observable, oldValue, newValue) -> videoSettings.setInputFilePath(newValue));
+        
         Button inputBrowseButton = new Button(LocalizationUtil.getString("button.browse"));
         inputBrowseButton.setOnAction(e -> chooseFile(inputFilePathField, true));
 
         Label outputLabel = new Label(LocalizationUtil.getString("label.outputFile"));
         outputFilePathField = new TextField();
-        outputFilePathField.textProperty().addListener((observable, oldValue, newValue) -> videoSettings.setOutputFilePath(newValue));
+        
         Button outputBrowseButton = new Button(LocalizationUtil.getString("button.browse"));
         outputBrowseButton.setOnAction(e -> chooseFile(outputFilePathField, false));
+
+        inputFilePathField.textProperty().addListener((observable, oldValue, newValue) -> {
+            try {
+            videoSettings.setInputFilePath(newValue);
+            } catch (NumberFormatException e) {
+                System.err.println("InputFilePathField error");
+            }
+        });
+        
+        outputFilePathField.textProperty().addListener((observable, oldValue, newValue) -> {
+            try {
+            videoSettings.setOutputFilePath(newValue);
+            } catch (NumberFormatException e) {
+                System.err.println("OutputFilePathField error");
+            }
+        });
 
         this.add(inputLabel, 0, 0);
         this.add(inputFilePathField, 1, 0);
@@ -79,13 +96,17 @@ public class FileSelectionPanel extends GridPane {
         }
     }
 
-    // Method to get the input file path field
     public TextField getInputFilePathField() {
         return inputFilePathField;
     }
 
-    // Method to get the output file path field
     public TextField getOutputFilePathField() {
         return outputFilePathField;
     }
+
+    @Override
+    public void updateVideoSettingsInfo(VideoSettings videoSettings) {
+        outputFilePathField.setText(videoSettings.getOutputFilePath());
+    }
+
 }
