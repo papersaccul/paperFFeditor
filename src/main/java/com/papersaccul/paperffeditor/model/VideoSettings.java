@@ -11,10 +11,14 @@ import com.papersaccul.paperffeditor.util.FFmpegCommandBuilder;
 public class VideoSettings {
     private String videoCodec;
     private String audioCodec;
-    private int bitrate;
+    private int videoBitrate;
+    private int audioBitrate;
     private double volume;
     private int frameRate;
     private String resolution;
+    private String videoWidth;
+    private String videoHeight;
+    private String drawingMethod;
     private String audioChannels;
     private String inputFilePath; 
     private String outputFilePath; 
@@ -30,12 +34,16 @@ public class VideoSettings {
         // Use FFmpegCommandBuilder to get video information for each detail
         this.videoCodec = FFmpegCommandBuilder.getVideoInfo(inputFilePath, "videoCodec");
         this.audioCodec = FFmpegCommandBuilder.getVideoInfo(inputFilePath, "audioCodec");
-        String bitrateStr = FFmpegCommandBuilder.getVideoInfo(inputFilePath, "bitrate").replaceAll("[^0-9]", "");
-        this.bitrate = bitrateStr.isEmpty() ? 3000 : Integer.parseInt(bitrateStr);
+        String videoBitrateStr = FFmpegCommandBuilder.getVideoInfo(inputFilePath, "videoBitrate").replaceAll("[^0-9]", "");
+        this.videoBitrate = videoBitrateStr.isEmpty() ? 3000 : Integer.parseInt(videoBitrateStr);
+        String audioBitrateStr = FFmpegCommandBuilder.getVideoInfo(inputFilePath, "audioBitrate").replaceAll("[^0-9]", "");
+        this.audioBitrate = audioBitrateStr.isEmpty() ? 3000 : Integer.parseInt(audioBitrateStr);
         this.volume = 100; // Volume is not extracted from videoInfo, default to 100
         String frameRateStr = FFmpegCommandBuilder.getVideoInfo(inputFilePath, "frameRate").replaceAll("[^0-9]", "");
         this.frameRate = frameRateStr.isEmpty() ? 30 : Integer.parseInt(frameRateStr);
-        this.resolution = FFmpegCommandBuilder.getVideoInfo(inputFilePath, "resolution");
+        this.videoWidth = FFmpegCommandBuilder.getVideoInfo(inputFilePath, "width");
+        this.videoHeight = FFmpegCommandBuilder.getVideoInfo(inputFilePath, "height");
+        this.drawingMethod = FFmpegCommandBuilder.getVideoInfo(inputFilePath, "drawingMethod");
         this.audioChannels = "Stereo"; // Audio channels are not extracted from videoInfo, default to Stereo
         this.outputFilePath = "";
         notifyObservers();
@@ -91,12 +99,20 @@ public class VideoSettings {
         setField("audioCodec", audioCodec);
     }
 
-    public int getBitrate() {
-        return bitrate;
+    public int getVideoBitrate() {
+        return videoBitrate;
     }
 
-    public void setBitrate(int bitrate) {
-        setField("bitrate", bitrate);
+    public void setVideoBitrate(int videoBitrate) {
+        setField("videoBitrate", videoBitrate);
+    }
+
+    public int getAudioBitrate() {
+        return audioBitrate;
+    }
+
+    public void setAudioBitrate(int audioBitrate) {
+        setField("audioBitrate", audioBitrate);
     }
 
     public double getVolume() {
@@ -115,12 +131,29 @@ public class VideoSettings {
         setField("frameRate", frameRate);
     }
 
-    public String getResolution() {
-        return resolution;
+    public String getDrawingMethod() {
+        return drawingMethod;
     }
 
-    public void setResolution(String resolution) {
-        setField("resolution", resolution);
+    public void setDrawingMethod(String drawingMethod) {
+        setField("drawingMethod", drawingMethod);
+    }
+
+    
+    public String getVideoHeight() {
+        return videoHeight;
+    }
+
+    public void setVideoHeight(String videoHeight) {
+        setField("resolution", videoHeight);
+    }
+
+    public String getVideoWidth() {
+        return videoWidth;
+    }
+
+    public void setVideoWidth(String videoWidth) {
+        setField("resolution", videoWidth);
     }
 
     public String getAudioChannels() {
@@ -154,7 +187,7 @@ public class VideoSettings {
         return "VideoSettings{" +
                 "audioCodec='" + audioCodec + '\'' +
                 ", videoCodec=" + videoCodec + '\'' +
-                ", bitrate=" + bitrate +
+                ", bitrate=" + videoBitrate +
                 ", volume=" + volume +
                 ", frameRate=" + frameRate +
                 ", resolution='" + resolution + '\'' +

@@ -37,9 +37,13 @@ public class FFmpegCommandBuilder {
             command.append(" -c:a ").append(settings.getAudioCodec());
         }
         
-        // Bitrate
-        if (settings.getBitrate() > 0) {
-            command.append(" -b:v ").append(settings.getBitrate()).append("k");
+        // Video Bitrate
+        if (settings.getVideoBitrate() > 0) {
+            command.append(" -b:v ").append(settings.getVideoBitrate()).append("k");
+        }
+        // Audio Bitrate
+        if (settings.getAudioBitrate() > 0) {
+            command.append(" -b:a ").append(settings.getAudioBitrate()).append("k");
         }
         
         // Volume
@@ -53,8 +57,8 @@ public class FFmpegCommandBuilder {
         }
         
         // Resolution
-        if (settings.getResolution() != null && !settings.getResolution().isEmpty()) {
-            command.append(" -s ").append(settings.getResolution());
+        if (settings.getVideoWidth() != null && !settings.getVideoWidth().isEmpty() && settings.getVideoHeight() != null && !settings.getVideoHeight().isEmpty()) {
+            command.append(" -s ").append(settings.getVideoWidth()).append("x").append(settings.getVideoHeight());
         }
         
         // Audio Channels
@@ -109,20 +113,52 @@ public class FFmpegCommandBuilder {
             String line;
             while ((line = reader.readLine()) != null) {
                 if (line.contains("Stream #0:0")) { // Video stream
-                    videoDetails.put("videoCodec", extractDetail(line, "Video: "));
-                    videoDetails.put("resolution", extractDetail(line, ", ", "x"));
+                    videoDetails.put("videoCodec", cleanCodecName(extractDetail(line, "Video: ")));
+                    // drawingMethodDetail doesn't work correctly, use only for logic
+                    String drawingMethodDetail = extractDetail(line, "Video: ", "(").trim();
+                    videoDetails.put("drawingMethod", drawingMethodDetail);
+                    String resolutionDetail = extractDetail(line, "),", "[SAR");
+                    if (resolutionDetail.isEmpty()) {
+                        resolutionDetail = extractDetail(line, drawingMethodDetail + ")", "[SAR");
+                    }
+                    String[] resolutionParts = resolutionDetail.split("x");
+                    if (resolutionParts.length == 2) {
+       
+                        String width = resolutionParts[0].substring(resolutionParts[0].lastIndexOf(" ")).trim();
+                        videoDetails.put("width", width);
+                        videoDetails.put("height", resolutionParts[1].split(" ")[0].trim()); 
+                    }
                     videoDetails.put("frameRate", extractDetail(line, "fps"));
                 } else if (line.contains("Stream #0:1")) { // Audio stream
-                    videoDetails.put("audioCodec", extractDetail(line, "Audio: "));
-                    videoDetails.put("audioChannels", extractDetail(line, "stereo"));
+                    videoDetails.put("audioCodec", cleanCodecName(extractDetail(line, "Audio: ")));
+                    videoDetails.put("audioChannels", extractDetail(line, "Audio: ", ","));
+                    // Parse audio bitrate
+                    String audioBitrateDetail = extractDetail(line, "Audio: ", ",");
+                    String[] audioBitrateParts = audioBitrateDetail.split(",");
+                    for (String part : audioBitrateParts) {
+                        if (part.trim().endsWith("kb/s")) {
+                            videoDetails.put("audioBitrate", part.trim());
+                            break;
+                        }
+                    }
                 } else if (line.contains("bitrate:")) {
-                    videoDetails.put("bitrate", extractDetail(line, "bitrate: "));
+                    videoDetails.put("videoBitrate", extractDetail(line, "bitrate: "));
                 }
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
         return videoDetails.getOrDefault(detail, "Detail not found");
+    }
+    
+    /**
+     * Cleans the codec name by removing any trailing commas.
+     * 
+     * @param codecName the codec name to clean
+     * @return the cleaned codec name
+     */
+    private static String cleanCodecName(String codecName) {
+        return codecName.endsWith(",") ? codecName.substring(0, codecName.length() - 1) : codecName;
     }
     
     /**
@@ -153,3 +189,4 @@ public class FFmpegCommandBuilder {
         return line.substring(startIndex, endIndex == -1 ? line.length() : endIndex);
     }
 }
+

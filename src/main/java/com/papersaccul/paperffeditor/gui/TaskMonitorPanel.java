@@ -87,15 +87,17 @@ public class TaskMonitorPanel extends GridPane implements VideoSettingsObserver 
     public void updateVideoSettingsInfo(VideoSettings videoSettings) {
         if (videoSettings != null) {
             String settingsInfo = String.format(
-                    "Resolution: %s\n" +
-                    "Bitrate: %s kbps\n" +
+                    "Resolution: %sx%s\n" + 
+                    "Video Bitrate: %s kbps\n" +
+                    "Audio Bitrate: %s kbps\n" +
                     "Frame Rate: %s fps\n" +
                     "Video Codec: %s\n" +
                     "Audio Codec: %s\n" +
                     "Volume: %s%%\n" +
                     "Audio Channels: %s",
-                    videoSettings.getResolution(), 
-                    videoSettings.getBitrate(), 
+                    videoSettings.getVideoWidth(), videoSettings.getVideoHeight(), 
+                    videoSettings.getVideoBitrate(),
+                    videoSettings.getAudioBitrate(),  
                     videoSettings.getFrameRate(),
                     videoSettings.getVideoCodec(),
                     videoSettings.getAudioCodec(),

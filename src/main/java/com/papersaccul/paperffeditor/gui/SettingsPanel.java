@@ -19,12 +19,14 @@ import java.io.InputStreamReader;
  */
 public class SettingsPanel extends GridPane implements VideoSettingsObserver {
 
-    private TextField bitrateField;
+    private TextField videoBitrateField;
+    private TextField audioBitrateField;
     private Slider volumeSlider;
     private ComboBox<String> videoCodecComboBox;
     private ComboBox<String> audioCodecComboBox;
     private TextField frameRateField;
-    private TextField resolutionField;
+    private TextField videoWidthField;
+    private TextField videoHeightField;
     private ComboBox<String> audioChannelComboBox;
     private VideoSettings videoSettings;
 
@@ -45,11 +47,21 @@ public class SettingsPanel extends GridPane implements VideoSettingsObserver {
         videoCodecComboBox = new ComboBox<>();
     
 
-        Label bitrateLabel = new Label(LocalizationUtil.getString("label.bitrate"));
-        bitrateField = new TextField();
-        bitrateField.textProperty().addListener((observable, oldValue, newValue) -> {
+        Label videoBitrateLabel = new Label(LocalizationUtil.getString("label.videoBitrate"));
+        videoBitrateField = new TextField();
+        videoBitrateField.textProperty().addListener((observable, oldValue, newValue) -> {
             try {
-                videoSettings.setBitrate(Integer.parseInt(newValue));
+                videoSettings.setVideoBitrate(Integer.parseInt(newValue));
+            } catch (NumberFormatException e) {
+                // Handle exception or invalid input
+            }
+        });
+
+        Label audioBitrateLabel = new Label(LocalizationUtil.getString("label.audioBitrate"));
+        audioBitrateField = new TextField();
+        audioBitrateField.textProperty().addListener((observable, oldValue, newValue) -> {
+            try {
+                videoSettings.setAudioBitrate(Integer.parseInt(newValue));
             } catch (NumberFormatException e) {
                 // Handle exception or invalid input
             }
@@ -69,9 +81,14 @@ public class SettingsPanel extends GridPane implements VideoSettingsObserver {
             }
         });
 
-        Label resolutionLabel = new Label(LocalizationUtil.getString("label.resolution"));
-        resolutionField = new TextField();
-        resolutionField.textProperty().addListener((observable, oldValue, newValue) -> videoSettings.setResolution(newValue));
+        Label videoWidthLabel = new Label(LocalizationUtil.getString("label.videoWidth"));
+        videoWidthField = new TextField();
+        videoWidthField.textProperty().addListener((observable, oldValue, newValue) -> videoSettings.setVideoWidth(newValue));
+        
+        Label videoHeightLabel = new Label(LocalizationUtil.getString("label.videoHeight"));
+        videoHeightField = new TextField();
+        videoHeightField.textProperty().addListener((observable, oldValue, newValue) -> videoSettings.setVideoHeight(newValue));
+
 
         Label audioChannelLabel = new Label(LocalizationUtil.getString("label.audioChannels"));
         audioChannelComboBox = new ComboBox<>();
@@ -113,16 +130,20 @@ public class SettingsPanel extends GridPane implements VideoSettingsObserver {
         this.add(videoCodecComboBox, 1, 0);
         this.add(audioCodecLabel, 0, 1);
         this.add(audioCodecComboBox, 1, 1);
-        this.add(bitrateLabel, 0, 2);
-        this.add(bitrateField, 1, 2);
-        this.add(volumeLabel, 0, 3);
-        this.add(volumeSlider, 1, 3);
-        this.add(frameRateLabel, 0, 4);
-        this.add(frameRateField, 1, 4);
-        this.add(resolutionLabel, 0, 5);
-        this.add(resolutionField, 1, 5);
-        this.add(audioChannelLabel, 0, 6);
-        this.add(audioChannelComboBox, 1, 6);
+        this.add(videoBitrateLabel, 0, 2);
+        this.add(videoBitrateField, 1, 2);
+        this.add(audioBitrateLabel, 0, 3);
+        this.add(audioBitrateField, 1, 3);
+        this.add(volumeLabel, 0, 4);
+        this.add(volumeSlider, 1, 4);
+        this.add(frameRateLabel, 0, 5);
+        this.add(frameRateField, 1, 5);
+        this.add(videoWidthLabel, 0, 6);
+        this.add(videoWidthField, 1, 6);
+        this.add(videoHeightLabel, 0, 7);
+        this.add(videoHeightField, 1, 7);
+        this.add(audioChannelLabel, 0, 8);
+        this.add(audioChannelComboBox, 1, 8);
         
     }
 
@@ -131,19 +152,23 @@ public class SettingsPanel extends GridPane implements VideoSettingsObserver {
         if (videoSettings != null) {
             videoCodecComboBox.setValue(videoSettings.getVideoCodec());
             audioCodecComboBox.setValue(videoSettings.getAudioCodec());
-            bitrateField.setText(String.valueOf(videoSettings.getBitrate()));
+            videoBitrateField.setText(String.valueOf(videoSettings.getVideoBitrate()));
+            audioBitrateField.setText(String.valueOf(videoSettings.getAudioBitrate()));
             volumeSlider.setValue(videoSettings.getVolume());
             frameRateField.setText(String.valueOf(videoSettings.getFrameRate()));
-            resolutionField.setText(videoSettings.getResolution());
+            videoWidthField.setText(videoSettings.getVideoWidth());
+            videoHeightField.setText(videoSettings.getVideoHeight());
             audioChannelComboBox.setValue(videoSettings.getAudioChannels());
         } else {
             // Set default values or clear the fields
             videoCodecComboBox.setValue("H.264");
             audioCodecComboBox.setValue("AAC");
-            bitrateField.setText("");
+            videoBitrateField.setText("");
+            audioBitrateField.setText("");
             volumeSlider.setValue(100);
             frameRateField.setText("");
-            resolutionField.setText("");
+            videoHeightField.setText("600");
+            videoWidthField.setText("800");
             audioChannelComboBox.setValue("Stereo");
         }
     }
