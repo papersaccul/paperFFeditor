@@ -66,6 +66,11 @@ public class Main extends Application {
 
 
         
+        scene.setFill(Color.TRANSPARENT);
+        rect.setArcHeight(30.0);
+        rect.setArcWidth(30.0);
+        borderPane.setClip(rect);
+
         primaryStage.initStyle(StageStyle.UNDECORATED);
         primaryStage.setTitle("PaperFFeditor - FFmpeg GUI");
         primaryStage.setScene(scene);

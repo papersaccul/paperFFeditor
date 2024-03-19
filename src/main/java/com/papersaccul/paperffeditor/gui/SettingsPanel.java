@@ -39,7 +39,7 @@ public class SettingsPanel extends GridPane implements VideoSettingsObserver {
      * Initializes the user interface components and layout for settings.
      */
     private void initUI() {
-        this.setPadding(new Insets(10));
+        this.setPadding(new Insets(20, 0, 0, 20));
         this.setVgap(10);
         this.setHgap(10);
 
@@ -141,6 +141,7 @@ public class SettingsPanel extends GridPane implements VideoSettingsObserver {
         audioCodecComboBox.valueProperty().addListener((observable, oldValue, newValue) -> videoSettings.setAudioCodec(newValue));
 
 
+        
         /*
          * Add all the components to the grid
          */

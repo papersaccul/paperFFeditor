@@ -31,7 +31,7 @@ public class FileSelectionPanel extends GridPane implements VideoSettingsObserve
      * Initializes the user interface components and layout for file selection.
      */
     private void initUI() {
-        this.setPadding(new Insets(10));
+        this.setPadding(new Insets(20, 0, 0, 20));
         this.setHgap(10);
         this.setVgap(10);
 
