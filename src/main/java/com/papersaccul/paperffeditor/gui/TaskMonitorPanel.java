@@ -24,10 +24,9 @@ public class TaskMonitorPanel extends GridPane implements VideoSettingsObserver 
 
     private ProgressBar progressBar;
     private Label statusLabel;
-    private Label inputFileLabel;
-    private Label outputFileLabel;
     private TableView<VideoSettingTable> videoSettingsTable; 
-    private Label ffmpegCommandLabel; 
+    private Label ffmpegCommandLabel;
+
 
     public TaskMonitorPanel() {
         initUI();
@@ -41,68 +40,55 @@ public class TaskMonitorPanel extends GridPane implements VideoSettingsObserver 
         this.setHgap(10);
         this.setVgap(10);
 
-        inputFileLabel = new Label();
-        outputFileLabel = new Label();
-        ffmpegCommandLabel = new Label(); 
+        ffmpegCommandLabel = new Label();
+        ffmpegCommandLabel.setPrefWidth(900); 
+        
 
-    // Initialize video settings table
+        // Initialize video settings table
         videoSettingsTable = new TableView<>();
         videoSettingsTable.setEditable(false);
+        videoSettingsTable.setMaxWidth(Double.MAX_VALUE);
+
+        videoSettingsTable.setMinHeight(100); 
+        videoSettingsTable.setPrefHeight(400); 
+        //videoSettingsTable.setMaxHeight(700); 
+        
+
         TableColumn<VideoSettingTable, String> settingColumn = new TableColumn<>("Setting");
         settingColumn.setCellValueFactory(cellData -> cellData.getValue().settingProperty());
+        settingColumn.setPrefWidth(200);
 
         TableColumn<VideoSettingTable, String> inputColumn = new TableColumn<>("Input");
         inputColumn.setCellValueFactory(cellData -> cellData.getValue().inputProperty());
+        inputColumn.setPrefWidth(350);
 
         TableColumn<VideoSettingTable, String> outputColumn = new TableColumn<>("Output");
         outputColumn.setCellValueFactory(cellData -> cellData.getValue().outputProperty());
+        outputColumn.setPrefWidth(350);
+
 
         Collections.addAll(videoSettingsTable.getColumns(), settingColumn, inputColumn, outputColumn);
 
-        this.add(new Label("Input File:"), 0, 0);
-        this.add(inputFileLabel, 1, 0);
-        this.add(new Label("Output File:"), 0, 1);
-        this.add(outputFileLabel, 1, 1);
-        this.add(new Label("Video Settings:"), 0, 2);
-        this.add(videoSettingsTable, 1, 2); 
-        this.add(new Label("FFmpeg Command:"), 0, 3); 
-        this.add(ffmpegCommandLabel, 1, 3); 
+        this.add(videoSettingsTable, 0, 0, 2, 1); 
         
         // Initialize components
         progressBar = new ProgressBar(0);
         statusLabel = new Label("Ready");
 
         // Set component properties
-        progressBar.setPrefWidth(300);
+        progressBar.setPrefWidth(900);
         progressBar.setPadding(new Insets(10, 0, 10, 0));
 
-        this.add(progressBar, 0, 4);
-        this.add(statusLabel, 0, 5);
-
+        this.add(ffmpegCommandLabel, 0, 1, 2, 1); 
+        this.add(progressBar, 0, 2, 2, 1);
+        this.add(statusLabel, 0, 3, 2, 1);
+        
         // Set VBox properties
         this.setPadding(new Insets(20));
     }
 
     /**
-     * Updates the display information for the input file.
-     * 
-     * @param filePath The path of the input file.
-     */
-    public void updateInputFileInfo(String filePath) {
-        inputFileLabel.setText(filePath != null ? filePath : "Not selected");
-    }
-
-    /**
-     * Updates the display information for the output file.
-     * 
-     * @param filePath The path of the output file.
-     */
-    public void updateOutputFileInfo(String filePath) {
-        outputFileLabel.setText(filePath != null ? filePath : "Not selected");
-    }
-
-    /**
-     * Updates the display information for the video settings.
+     * Updates the display information for the input file, output file, and ffmpeg command.
      * 
      * @param videoSettings The VideoSettings object containing the settings.
      */
@@ -110,24 +96,23 @@ public class TaskMonitorPanel extends GridPane implements VideoSettingsObserver 
     public void updateVideoSettingsInfo(VideoSettings videoSettings) {
         ObservableList<VideoSettingTable> data = FXCollections.observableArrayList();
         if (videoSettings != null) {
-            // setting | input | output
+            String ffmpegCommand = FFmpegCommandBuilder.buildCommand(videoSettings.getInputFilePath(), videoSettings.getOutputFilePath(), videoSettings);
+            ffmpegCommandLabel.setText("FFmpeg Command:     " + ffmpegCommand);
+            data.add(new VideoSettingTable("File", videoSettings.getInputFilePath(), videoSettings.getOutputFilePath()));
+            //data.add(new VideoSettingTable("FFmpeg Command", ffmpegCommand, ""));
             data.add(new VideoSettingTable("Resolution", videoSettings.getInputVideoWidth() + "x" + videoSettings.getInputVideoHeight(), videoSettings.getVideoWidth() + "x" + videoSettings.getVideoHeight()));
             data.add(new VideoSettingTable("Video Bitrate", videoSettings.getInputVideoBitrate() + " kbps", videoSettings.getVideoBitrate() + " kbps"));
             data.add(new VideoSettingTable("Audio Bitrate", videoSettings.getInputAudioBitrate() + " kbps", videoSettings.getAudioBitrate() + " kbps"));
             data.add(new VideoSettingTable("Frame Rate", videoSettings.getInputFrameRate() + " fps", videoSettings.getFrameRate() + " fps"));
             data.add(new VideoSettingTable("Video Codec", videoSettings.getInputVideoCodec(), videoSettings.getVideoCodec()));
             data.add(new VideoSettingTable("Audio Codec", videoSettings.getInputAudioCodec(), videoSettings.getAudioCodec()));
-            data.add(new VideoSettingTable("Volume", "100", videoSettings.getVolume() + "%"));
+            data.add(new VideoSettingTable("Volume", "", videoSettings.getVolume() + "%"));
             data.add(new VideoSettingTable("Audio Channels", videoSettings.getInputAudioChannels(), videoSettings.getAudioChannels()));
             
             videoSettingsTable.setItems(data);
-            updateInputFileInfo(videoSettings.getInputFilePath());
-            updateOutputFileInfo(videoSettings.getOutputFilePath());
-
-            String ffmpegCommand = FFmpegCommandBuilder.buildCommand(videoSettings.getInputFilePath(), videoSettings.getOutputFilePath(), videoSettings);
-            ffmpegCommandLabel.setText(ffmpegCommand); 
         } else {
             videoSettingsTable.setItems(FXCollections.observableArrayList(new VideoSettingTable("Default settings", "", "")));
+            ffmpegCommandLabel.setText("Default settings");
         }
     }
     /**
