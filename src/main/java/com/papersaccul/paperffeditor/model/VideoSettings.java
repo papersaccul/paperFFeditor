@@ -22,6 +22,17 @@ public class VideoSettings {
     private String audioChannels;
     private String inputFilePath; 
     private String outputFilePath; 
+    // New fields for input file settings
+    private String inputVideoCodec;
+    private String inputAudioCodec;
+    private String inputVideoBitrate;
+    private String inputAudioBitrate;
+    private String inputFrameRate;
+    private String inputResolution;
+    private String inputVideoWidth;
+    private String inputVideoHeight;
+    private String inputDrawingMethod;
+    private String inputAudioChannels;
 
     public VideoSettings() {
         // Default settings are now set based on input file information
@@ -32,26 +43,15 @@ public class VideoSettings {
 
     private void setDefaultSettingsOnInputFile(String inputFilePath) {
         // Use FFmpegCommandBuilder to get video information for each detail
-        this.videoCodec = FFmpegCommandBuilder.getVideoInfo(inputFilePath, "videoCodec");
-        this.audioCodec = FFmpegCommandBuilder.getVideoInfo(inputFilePath, "audioCodec");
-
-        //String videoBitrateStr = FFmpegCommandBuilder.getVideoInfo(inputFilePath, "videoBitrate").replaceAll("[^0-9]", "");
-        this.videoBitrate = FFmpegCommandBuilder.getVideoInfo(inputFilePath, "videoBitrate");
-
-        //String audioBitrateStr = FFmpegCommandBuilder.getVideoInfo(inputFilePath, "audioBitrate").replaceAll("[^0-9]", "");
-        this.audioBitrate = FFmpegCommandBuilder.getVideoInfo(inputFilePath, "audioBitrate");
-        System.out.println("audioBitrate: " + audioBitrate);
-        System.out.println("videoBitrate: " + videoBitrate);
-        System.out.println("frameRate: " + frameRate);
-        this.volume = 100; // default to 100
-
-        //String frameRateStr = FFmpegCommandBuilder.getVideoInfo(inputFilePath, "frameRate").replaceAll("[^0-9]", "");
-        this.frameRate = FFmpegCommandBuilder.getVideoInfo(inputFilePath, "frameRate").isEmpty() ? "30" : FFmpegCommandBuilder.getVideoInfo(inputFilePath, "frameRate");
-
-        this.videoWidth = FFmpegCommandBuilder.getVideoInfo(inputFilePath, "videoWidth");
-        this.videoHeight = FFmpegCommandBuilder.getVideoInfo(inputFilePath, "videoHeight");
-        this.drawingMethod = FFmpegCommandBuilder.getVideoInfo(inputFilePath, "drawingMethod");
-        this.audioChannels = "Stereo"; // todo
+        this.inputVideoCodec = FFmpegCommandBuilder.getVideoInfo(inputFilePath, "videoCodec");
+        this.inputAudioCodec = FFmpegCommandBuilder.getVideoInfo(inputFilePath, "audioCodec");
+        this.inputVideoBitrate = FFmpegCommandBuilder.getVideoInfo(inputFilePath, "videoBitrate");
+        this.inputAudioBitrate = FFmpegCommandBuilder.getVideoInfo(inputFilePath, "audioBitrate");
+        this.inputFrameRate = FFmpegCommandBuilder.getVideoInfo(inputFilePath, "frameRate").isEmpty() ? "30" : FFmpegCommandBuilder.getVideoInfo(inputFilePath, "frameRate");
+        this.inputVideoWidth = FFmpegCommandBuilder.getVideoInfo(inputFilePath, "videoWidth");
+        this.inputVideoHeight = FFmpegCommandBuilder.getVideoInfo(inputFilePath, "videoHeight");
+        this.inputDrawingMethod = FFmpegCommandBuilder.getVideoInfo(inputFilePath, "drawingMethod");
+        this.inputAudioChannels = "Stereo"; // todo
 
         if (inputFilePath != "") {
         int dotIndex = inputFilePath.lastIndexOf('.');
@@ -59,6 +59,19 @@ public class VideoSettings {
         String extension = inputFilePath.substring(dotIndex);
         this.outputFilePath = baseName + "_out" + extension;
         } else this.outputFilePath = "1";
+
+
+    // set input settings for output as default
+        this.videoCodec = this.inputVideoCodec;
+        this.audioCodec = this.inputAudioCodec;
+        this.videoBitrate = this.inputVideoBitrate;
+        this.audioBitrate = this.inputAudioBitrate;
+        this.volume = 100;
+        this.frameRate = this.inputFrameRate;
+        this.videoWidth = this.inputVideoWidth;
+        this.videoHeight = this.inputVideoHeight;
+        this.drawingMethod = this.inputDrawingMethod;
+        this.audioChannels = this.inputAudioChannels;
 
         notifyObservers();
     }
@@ -96,7 +109,7 @@ public class VideoSettings {
         }
     }
 
-// Getters and Setters
+// Getters and Setters for both input and output settings
     public String getVideoCodec() {
         return videoCodec;
     }
@@ -153,7 +166,6 @@ public class VideoSettings {
         setField("drawingMethod", drawingMethod);
     }
 
-    
     public String getVideoHeight() {
         return videoHeight;
     }
@@ -193,6 +205,47 @@ public class VideoSettings {
 
     public void setOutputFilePath(String outputFilePath) {
         setField("outputFilePath", outputFilePath);
+    }
+
+    // Getters for input settings
+    public String getInputVideoCodec() {
+        return inputVideoCodec;
+    }
+
+    public String getInputAudioCodec() {
+        return inputAudioCodec;
+    }
+
+    public String getInputVideoBitrate() {
+        return inputVideoBitrate;
+    }
+
+    public String getInputAudioBitrate() {
+        return inputAudioBitrate;
+    }
+
+    public String getInputFrameRate() {
+        return inputFrameRate;
+    }
+
+    public String getInputResolution() {
+        return inputResolution;
+    }
+
+    public String getInputVideoWidth() {
+        return inputVideoWidth;
+    }
+
+    public String getInputVideoHeight() {
+        return inputVideoHeight;
+    }
+
+    public String getInputDrawingMethod() {
+        return inputDrawingMethod;
+    }
+
+    public String getInputAudioChannels() {
+        return inputAudioChannels;
     }
 
     // I forgot about this method and went the observer pattern way. 

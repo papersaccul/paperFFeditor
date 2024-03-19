@@ -30,7 +30,7 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) {
         MainWindow mainWindow = new MainWindow();
-        Scene scene = new Scene(mainWindow, 800, 600);
+        Scene scene = new Scene(mainWindow, 1000, 800);
 
         // Old theme
         //scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());  
