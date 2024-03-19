@@ -9,7 +9,6 @@ import javafx.scene.layout.GridPane;
 import com.papersaccul.paperffeditor.util.LocalizationUtil;
 import com.papersaccul.paperffeditor.model.VideoSettingsObserver;
 import com.papersaccul.paperffeditor.model.VideoSettings;
-import com.papersaccul.paperffeditor.model.VideoSettingsObserver;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -107,7 +106,7 @@ public class SettingsPanel extends GridPane implements VideoSettingsObserver {
         Label audioChannelLabel = new Label(LocalizationUtil.getString("label.audioChannels"));
         audioChannelComboBox = new ComboBox<>();
         audioChannelComboBox.getItems().addAll("Mono", "Stereo", "5.1", "7.1");
-        audioChannelComboBox.setValue("Stereo");
+        //audioChannelComboBox.setValue("Stereo");
         audioChannelComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
             videoSettings.setAudioChannels(newValue);
         });

@@ -13,6 +13,7 @@ import com.papersaccul.paperffeditor.model.VideoSettingsObserver;
 import com.papersaccul.paperffeditor.model.TaskStatusObserver;
 import com.papersaccul.paperffeditor.util.FFmpegCommandBuilder;
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import java.util.Collections;
@@ -52,40 +53,38 @@ public class TaskMonitorPanel extends GridPane implements VideoSettingsObserver,
         videoSettingsTable.setMaxWidth(Double.MAX_VALUE);
 
         videoSettingsTable.setMinHeight(100); 
-        videoSettingsTable.setPrefHeight(400); 
+        videoSettingsTable.setPrefHeight(399); 
         //videoSettingsTable.setMaxHeight(700); 
         
 
         TableColumn<VideoSettingTable, String> settingColumn = new TableColumn<>("Setting");
         settingColumn.setCellValueFactory(cellData -> cellData.getValue().settingProperty());
-        settingColumn.setPrefWidth(200);
+        settingColumn.setPrefWidth(199);
 
         TableColumn<VideoSettingTable, String> inputColumn = new TableColumn<>("Input");
         inputColumn.setCellValueFactory(cellData -> cellData.getValue().inputProperty());
-        inputColumn.setPrefWidth(350);
+        inputColumn.setPrefWidth(339);
 
         TableColumn<VideoSettingTable, String> outputColumn = new TableColumn<>("Output");
         outputColumn.setCellValueFactory(cellData -> cellData.getValue().outputProperty());
-        outputColumn.setPrefWidth(350);
+        outputColumn.setPrefWidth(339);
 
 
         Collections.addAll(videoSettingsTable.getColumns(), settingColumn, inputColumn, outputColumn);
 
         this.add(videoSettingsTable, 0, 0, 2, 1); 
         
-        // Initialize components
-        progressBar = new ProgressBar(0);
-        statusLabel = new Label("Ready");
 
-        // Set component properties
+        progressBar = new ProgressBar(0);
+        statusLabel = new Label("");
+
         progressBar.setPrefWidth(900);
         progressBar.setPadding(new Insets(10, 0, 10, 0));
 
         this.add(ffmpegCommandLabel, 0, 1, 2, 1); 
-        this.add(progressBar, 0, 2, 2, 1);
-        this.add(statusLabel, 0, 3, 2, 1);
+        this.add(progressBar, 0, 5, 2, 1);
+        this.add(statusLabel, 0, 6, 2, 1);
         
-        // Set VBox properties
         this.setPadding(new Insets(20));
     }
 
@@ -112,9 +111,11 @@ public class TaskMonitorPanel extends GridPane implements VideoSettingsObserver,
             data.add(new VideoSettingTable("Audio Channels", videoSettings.getInputAudioChannels(), videoSettings.getAudioChannels()));
             
             videoSettingsTable.setItems(data);
+            statusLabel.setText("Ready");
         } else {
             videoSettingsTable.setItems(FXCollections.observableArrayList(new VideoSettingTable("Default settings", "", "")));
             ffmpegCommandLabel.setText("Default settings");
+            statusLabel.setText("Not ready");
         }
     }
 
@@ -124,8 +125,10 @@ public class TaskMonitorPanel extends GridPane implements VideoSettingsObserver,
      */
     @Override
     public void onTaskStatusUpdate(TaskStatus taskStatus) {
-        progressBar.setProgress(taskStatus.getProgress());
-        statusLabel.setText(taskStatus.getMessage());
+        Platform.runLater(() -> {
+            progressBar.setProgress(taskStatus.getProgress());
+            statusLabel.setText(taskStatus.getMessage());
+        });
     }
 
 }

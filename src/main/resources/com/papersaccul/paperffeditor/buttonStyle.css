@@ -1,0 +1,36 @@
+
+
+.button {
+    -fx-background-color: transparent;
+    -fx-cursor: hand;
+}
+
+.button:hover {
+    -fx-background-color: #4C566A;
+}
+
+.button:pressed {
+    -fx-background-color: #697691;
+}
+
+.close-button {
+    -fx-background-color: transparent;
+    -fx-cursor: hand;
+}
+
+.close-button:hover {
+    -fx-background-color: #BF616A; 
+}
+
+.close-button:pressed {
+    -fx-background-color: rgb(197, 85, 96); 
+}
+
+.mainFxmlClass {
+    #pane{
+      -fx-background-size: 1200 900;
+      -fx-background-radius: 0 0 18 18;
+      -fx-border-radius: 0 0 18 18;
+      -fx-background-color: #FC3D44;
+    }
+  }

@@ -2,9 +2,13 @@ package com.papersaccul.paperffeditor;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
-import com.papersaccul.paperffeditor.gui.MainWindow;
+import javafx.stage.StageStyle;
 
+import com.papersaccul.paperffeditor.gui.MainWindow;
 
 import atlantafx.base.theme.NordDark;
 //import atlantafx.base.theme.NordLight;
@@ -30,18 +34,45 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) {
         MainWindow mainWindow = new MainWindow();
-        Scene scene = new Scene(mainWindow, 1000, 800);
+        BorderPane borderPane = new BorderPane();
 
-        // Old theme
-        //scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());  
+        var windowSize = new Object() {
+            int width = 920;
+            int height = 700;
+        };
+
+        Scene scene = new Scene(borderPane, windowSize.width, windowSize.height);
+        Rectangle rect = new Rectangle(windowSize.width, windowSize.height);
+
+        
+        //stage.initStyle(StageStyle.TRANSPARENT);
+        scene.getStylesheets().add(getClass().getResource("buttonStyle.css").toExternalForm());  
 
         // super-mega-duper theme by mkpaz - atlantafx
         Application.setUserAgentStylesheet(new NordDark().getUserAgentStylesheet());
 
 
+        borderPane.setCenter(mainWindow);
+
+        scene.setOnMousePressed(mouseEvent -> {
+            dragDelta.x = primaryStage.getX() - mouseEvent.getScreenX();
+            dragDelta.y = primaryStage.getY() - mouseEvent.getScreenY();
+        });
+
+        scene.setOnMouseDragged(mouseEvent -> {
+            primaryStage.setX(mouseEvent.getScreenX() + dragDelta.x);
+            primaryStage.setY(mouseEvent.getScreenY() + dragDelta.y);
+        });
+
+
+        
+        primaryStage.initStyle(StageStyle.UNDECORATED);
         primaryStage.setTitle("PaperFFeditor - FFmpeg GUI");
         primaryStage.setScene(scene);
-        //primaryStage.getIcons().add(new javafx.scene.image.Image("file:src/main/resources/icon.png"));
+        primaryStage.initStyle(StageStyle.TRANSPARENT);
         primaryStage.show();
     }
+
+    class Delta { double x, y; }
+    final Delta dragDelta = new Delta();
 }

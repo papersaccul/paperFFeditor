@@ -47,7 +47,7 @@ public class VideoSettings {
         this.inputAudioCodec = FFmpegCommandBuilder.getVideoInfo(inputFilePath, "audioCodec");
         this.inputVideoBitrate = FFmpegCommandBuilder.getVideoInfo(inputFilePath, "videoBitrate");
         this.inputAudioBitrate = FFmpegCommandBuilder.getVideoInfo(inputFilePath, "audioBitrate");
-        this.inputFrameRate = FFmpegCommandBuilder.getVideoInfo(inputFilePath, "frameRate").isEmpty() ? "30" : FFmpegCommandBuilder.getVideoInfo(inputFilePath, "frameRate");
+        this.inputFrameRate = FFmpegCommandBuilder.getVideoInfo(inputFilePath, "frameRate");
         this.inputVideoWidth = FFmpegCommandBuilder.getVideoInfo(inputFilePath, "videoWidth");
         this.inputVideoHeight = FFmpegCommandBuilder.getVideoInfo(inputFilePath, "videoHeight");
         this.inputDrawingMethod = FFmpegCommandBuilder.getVideoInfo(inputFilePath, "drawingMethod");

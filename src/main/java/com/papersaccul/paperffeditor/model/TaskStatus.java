@@ -11,7 +11,7 @@ public class TaskStatus {
 
     public TaskStatus() {
         this.progress = 0;
-        this.message = "Ready";
+        this.message = "0";
     }
 
     public void addObserver(TaskStatusObserver observer) {
