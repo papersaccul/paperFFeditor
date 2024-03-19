@@ -9,8 +9,10 @@ import javafx.scene.layout.GridPane;
 import com.papersaccul.paperffeditor.model.TaskStatus;
 import com.papersaccul.paperffeditor.model.VideoSettingTable;
 import com.papersaccul.paperffeditor.model.VideoSettings;
-import com.papersaccul.paperffeditor.model.VideoSettings.VideoSettingsObserver;
-import com.papersaccul.paperffeditor.util.FFmpegCommandBuilder; 
+import com.papersaccul.paperffeditor.model.VideoSettingsObserver;
+import com.papersaccul.paperffeditor.model.TaskStatusObserver;
+import com.papersaccul.paperffeditor.util.FFmpegCommandBuilder;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import java.util.Collections;
@@ -20,7 +22,7 @@ import java.util.Collections;
  * TaskMonitorPanel class represents the panel for monitoring tasks in the application.
  * It displays the progress and status of ongoing tasks.
  */
-public class TaskMonitorPanel extends GridPane implements VideoSettingsObserver {
+public class TaskMonitorPanel extends GridPane implements VideoSettingsObserver, TaskStatusObserver {
 
     private ProgressBar progressBar;
     private Label statusLabel;
@@ -115,12 +117,15 @@ public class TaskMonitorPanel extends GridPane implements VideoSettingsObserver 
             ffmpegCommandLabel.setText("Default settings");
         }
     }
+
     /**
      * Updates the progress bar and status label based on the given task status.
      * @param taskStatus the current status of the task
      */
-    public void updateTaskStatus(TaskStatus taskStatus) {
+    @Override
+    public void onTaskStatusUpdate(TaskStatus taskStatus) {
         progressBar.setProgress(taskStatus.getProgress());
         statusLabel.setText(taskStatus.getMessage());
     }
+
 }

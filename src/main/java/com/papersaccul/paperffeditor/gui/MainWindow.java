@@ -23,9 +23,10 @@ import com.papersaccul.paperffeditor.util.LocalizationUtil;
  * MainWindow class represents the main window of the application.
  * It sets up the GUI structure including tabs for different functionalities.
  */
-public class MainWindow extends BorderPane {
+public class MainWindow extends BorderPane  {
 
     private VideoSettings videoSettings = new VideoSettings();
+    private TaskStatus taskStatus = new TaskStatus();
 
     public MainWindow() {
         initUI();
@@ -59,6 +60,7 @@ public class MainWindow extends BorderPane {
         videoSettings.addObserver(fileSelectionPanel);
         videoSettings.addObserver(settingsPanel);
         videoSettings.addObserver(taskMonitorPanel);
+        taskStatus.addObserver(taskMonitorPanel);
         
     // Add Tabs
         tabPane.getTabs().addAll(fileSelectionTab, settingsTab, taskMonitorTab);
@@ -69,7 +71,6 @@ public class MainWindow extends BorderPane {
     // Create buttons for start and about
         Button startButton = new Button(LocalizationUtil.getString("button.start"));
         startButton.setOnAction(e -> {
-            TaskStatus taskStatus = new TaskStatus(0, "Starting");
 
     // Overwrite check
             String command;

@@ -76,11 +76,6 @@ public class VideoSettings {
         notifyObservers();
     }
 
-// Observer
-    public interface VideoSettingsObserver {
-        void updateVideoSettingsInfo(VideoSettings videoSettings);
-    }
-
     private List<VideoSettingsObserver> observers = new ArrayList<>();
 
     

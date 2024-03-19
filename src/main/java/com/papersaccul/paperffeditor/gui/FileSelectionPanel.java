@@ -8,7 +8,7 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
 import com.papersaccul.paperffeditor.util.LocalizationUtil;
 import com.papersaccul.paperffeditor.model.VideoSettings;
-import com.papersaccul.paperffeditor.model.VideoSettings.VideoSettingsObserver;
+import com.papersaccul.paperffeditor.model.VideoSettingsObserver;
 
 import java.io.File;
 

@@ -7,8 +7,9 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.ComboBox;
 import javafx.scene.layout.GridPane;
 import com.papersaccul.paperffeditor.util.LocalizationUtil;
+import com.papersaccul.paperffeditor.model.VideoSettingsObserver;
 import com.papersaccul.paperffeditor.model.VideoSettings;
-import com.papersaccul.paperffeditor.model.VideoSettings.VideoSettingsObserver;
+import com.papersaccul.paperffeditor.model.VideoSettingsObserver;
 
 import java.io.BufferedReader;
 import java.io.IOException;

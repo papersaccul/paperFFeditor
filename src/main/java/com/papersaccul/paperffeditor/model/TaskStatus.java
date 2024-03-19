@@ -1,52 +1,57 @@
 package com.papersaccul.paperffeditor.model;
 
-/**
- * TaskStatus class represents the status of a task in the application.
- * It holds information about the progress and message of the task.
- */
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
+
 public class TaskStatus {
     private double progress;
     private String message;
+    private List<TaskStatusObserver> observers = new ArrayList<>();
 
-    /**
-     * Constructor for TaskStatus.
-     * @param progress the progress of the task, ranging from 0.0 to 1.0
-     * @param message the message or status description of the task
-     */
-    public TaskStatus(double progress, String message) {
-        this.progress = progress;
-        this.message = message;
+    public TaskStatus() {
+        this.progress = 0;
+        this.message = "Ready";
     }
 
-    /**
-     * Gets the progress of the task.
-     * @return the progress as a double
-     */
+    public void addObserver(TaskStatusObserver observer) {
+        observers.add(observer);
+    }
+
+    public void removeObserver(TaskStatusObserver observer) {
+        observers.remove(observer);
+    }
+
+    private void notifyObservers() {
+        for (TaskStatusObserver observer : observers) {
+            observer.onTaskStatusUpdate(this);
+        }
+    }
+
+    private void setField(String fieldName, Object value) {
+        try {
+            Field field = this.getClass().getDeclaredField(fieldName);
+            field.setAccessible(true);
+            field.set(this, value);
+            notifyObservers();
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
     public double getProgress() {
         return progress;
     }
 
-    /**
-     * Sets the progress of the task.
-     * @param progress the progress to set, ranging from 0.0 to 1.0
-     */
     public void setProgress(double progress) {
-        this.progress = progress;
+        setField("progress", progress);
     }
 
-    /**
-     * Gets the message or status description of the task.
-     * @return the message as a String
-     */
     public String getMessage() {
         return message;
     }
 
-    /**
-     * Sets the message or status description of the task.
-     * @param message the message to set
-     */
     public void setMessage(String message) {
-        this.message = message;
+        setField("message", message);
     }
 }
