@@ -2,11 +2,9 @@ package com.papersaccul.paperffeditor;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.stage.Stage;
 import com.papersaccul.paperffeditor.gui.MainWindow;
-import com.papersaccul.paperffeditor.util.FFmpegCommandBuilder;
-import com.papersaccul.paperffeditor.model.VideoSettings;
+
 
 import atlantafx.base.theme.NordDark;
 //import atlantafx.base.theme.NordLight;

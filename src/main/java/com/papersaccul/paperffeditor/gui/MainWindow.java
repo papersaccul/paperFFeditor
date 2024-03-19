@@ -1,7 +1,9 @@
 package com.papersaccul.paperffeditor.gui;
 
 import javafx.geometry.Insets;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.BorderPane;
@@ -9,6 +11,8 @@ import javafx.scene.layout.HBox;
 import java.io.IOException;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.io.File;
+
 
 import com.papersaccul.paperffeditor.model.TaskStatus;
 import com.papersaccul.paperffeditor.model.VideoSettings;
@@ -24,7 +28,6 @@ public class MainWindow extends BorderPane {
     private VideoSettings videoSettings = new VideoSettings();
 
     public MainWindow() {
-        // Initialize the main layout components
         initUI();
     }
 
@@ -32,12 +35,12 @@ public class MainWindow extends BorderPane {
      * Initializes the user interface components and layout.
      */
     private void initUI() {
-        // Create a TabPane as the central component
+    // Create TabPane
         TabPane tabPane = new TabPane();
         TaskMonitorPanel taskMonitorPanel = new TaskMonitorPanel();
         SettingsPanel settingsPanel = new SettingsPanel(videoSettings);
 
-        // Create tabs for different functionalities
+    // Create tabs
         Tab fileSelectionTab = new Tab(LocalizationUtil.getString("tab.fileSelection"));
         fileSelectionTab.setClosable(false);
 
@@ -57,21 +60,32 @@ public class MainWindow extends BorderPane {
         videoSettings.addObserver(settingsPanel);
         videoSettings.addObserver(taskMonitorPanel);
         
-        
-        // Add tabs to the TabPane
+    // Add Tabs
         tabPane.getTabs().addAll(fileSelectionTab, settingsTab, taskMonitorTab);
         
-        // Set the TabPane as the center component of the BorderPane
         this.setCenter(tabPane);
-        
-        // Set padding for the BorderPane
         this.setPadding(new Insets(10, 10, 10, 10));
         
-        // Create buttons for start and about
+    // Create buttons for start and about
         Button startButton = new Button(LocalizationUtil.getString("button.start"));
         startButton.setOnAction(e -> {
             TaskStatus taskStatus = new TaskStatus(0, "Starting");
-            String command = FFmpegCommandBuilder.buildCommand(videoSettings.getInputFilePath(), videoSettings.getOutputFilePath(), videoSettings);
+
+    // Overwrite check
+            String command;
+            if (new File(videoSettings.getOutputFilePath()).exists()) {
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION, String.format(LocalizationUtil.getString("alert.fileExists"), videoSettings.getOutputFilePath()), ButtonType.YES, ButtonType.NO);
+                alert.showAndWait();
+                if (alert.getResult() == ButtonType.YES) {
+                    command = FFmpegCommandBuilder.buildCommand(videoSettings.getInputFilePath(), videoSettings.getOutputFilePath(), videoSettings) + " -y";
+                } else {
+                    return; 
+                }
+            } else {
+                command = FFmpegCommandBuilder.buildCommand(videoSettings.getInputFilePath(), videoSettings.getOutputFilePath(), videoSettings);
+            }
+
+    // command task
             ProcessBuilder processBuilder = new ProcessBuilder(command.split(" "));
             processBuilder.redirectErrorStream(true);
             try {
@@ -83,10 +97,8 @@ public class MainWindow extends BorderPane {
                     try {
                         while ((line = reader.readLine()) != null) {
                             System.out.println(line);
-                            // Update progress based on the output of the process
-                            // This is a placeholder for actual progress parsing logic
-                            progress += 0.01; // Increment progress for demonstration
-                            taskStatus.setProgress(Math.min(progress, 1.0)); // Ensure progress does not exceed 100%
+                            progress += 0.01; 
+                            taskStatus.setProgress(Math.min(progress, 1.0)); 
                             taskStatus.setMessage("Processing");
                         }
                         process.waitFor();

@@ -63,7 +63,7 @@ public class VideoSettings {
         notifyObservers();
     }
 
-    // Observer
+// Observer
     public interface VideoSettingsObserver {
         void updateVideoSettingsInfo(VideoSettings videoSettings);
     }
@@ -96,7 +96,7 @@ public class VideoSettings {
         }
     }
 
-    // Getters and Setters
+// Getters and Setters
     public String getVideoCodec() {
         return videoCodec;
     }

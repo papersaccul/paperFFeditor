@@ -25,8 +25,11 @@ public class FFmpegCommandBuilder {
      */
     public static String buildCommand(String inputFilePath, String outputFilePath, VideoSettings settings) {
         StringBuilder command = new StringBuilder("ffmpeg -i ");
+
+        
         command.append(quote(inputFilePath));
         
+
 // Video Codec
         if (settings.getVideoCodec() != null && !settings.getVideoCodec().isEmpty()) {
             command.append(" -c:v ").append(settings.getVideoCodec());
