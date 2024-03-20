@@ -12,15 +12,12 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.stage.Stage;
 
-import java.io.IOException;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.io.File;
 
 import com.papersaccul.paperffeditor.model.TaskStatus;
 import com.papersaccul.paperffeditor.model.VideoSettings;
-import com.papersaccul.paperffeditor.util.FFmpegCommandBuilder;
 import com.papersaccul.paperffeditor.util.LocalizationUtil;
+import com.papersaccul.paperffeditor.util.TaskRunner;
 
 /**
  * MainWindow class represents the main window of the application.
@@ -30,6 +27,7 @@ public class MainWindow extends BorderPane  {
 
     private VideoSettings videoSettings = new VideoSettings();
     private TaskStatus taskStatus = new TaskStatus();
+    private TaskRunner taskRunner = new TaskRunner(videoSettings, taskStatus);
 
     public MainWindow() {
         initUI();
@@ -74,64 +72,34 @@ public class MainWindow extends BorderPane  {
         this.setCenter(tabPane);
         this.setPadding(new Insets(0, 0, 0, 0));
         
-    // Create buttons for start and about
+    // Create buttons
         Button startButton = new Button(LocalizationUtil.getString("button.start"));
-        //startButton.setDisable(videoSettings.getInputFilePath() == "");
         startButton.setOnAction(e -> {
-
             tabPane.getSelectionModel().select(taskMonitorTab);
             taskStatus.setProgress(0);
             taskStatus.setMessage("Starting");
-    // Overwrite check
-            String command;
+
+            // Проверка существования файла
             if (new File(videoSettings.getOutputFilePath()).exists()) {
-                //Dialog alert = new Dialog();
-                Alert alert = new Alert(Alert.AlertType.NONE, 
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION, 
                                         String.format(LocalizationUtil.getString("alert.fileExists"), 
                                         videoSettings.getOutputFilePath()), // for %s in LocalizationUtil
-                                        ButtonType.YES, ButtonType.NO
-                                        );
+                                        ButtonType.YES, ButtonType.NO);
                 alert.setHeaderText(null);
                 alert.setGraphic(null);
                 alert.showAndWait();
 
                 if (alert.getResult() == ButtonType.YES) {
-                    command = FFmpegCommandBuilder.buildCommand(videoSettings.getInputFilePath(), videoSettings.getOutputFilePath(), videoSettings) + " -y";
+                    // user agreed to overwrite
+                    taskRunner.render(true); 
                 } else {
+                    // user refused to be overwritten
                     taskStatus.setMessage("Ready");
-                    return; 
+                    return;
                 }
             } else {
-                command = FFmpegCommandBuilder.buildCommand(videoSettings.getInputFilePath(), videoSettings.getOutputFilePath(), videoSettings);
-            }
-
-    // command task
-            ProcessBuilder processBuilder = new ProcessBuilder(command.split(" "));
-            processBuilder.redirectErrorStream(true);
-            try {
-                Process process = processBuilder.start();
-                new Thread(() -> {
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-                    String line;
-                    double progress = 0.0;
-                    try {
-                        while ((line = reader.readLine()) != null) {
-                            System.out.println(line);
-                            progress += 0.01; 
-                            taskStatus.setProgress(Math.min(progress, 1.0)); 
-                            taskStatus.setMessage("Processing");
-                        }
-                        process.waitFor();
-                        taskStatus.setProgress(1.0);
-                        taskStatus.setMessage("Completed");
-                    } catch (IOException | InterruptedException ioException) {
-                        ioException.printStackTrace();
-                        taskStatus.setMessage("Error: " + ioException.getMessage());
-                    }
-                }).start();
-            } catch (IOException ioException) {
-                ioException.printStackTrace();
-                taskStatus.setMessage("Error: " + ioException.getMessage());
+                // file does not exist, it is safe to run
+                taskRunner.render(false);
             }
         });
         Button settingsButton = new Button(LocalizationUtil.getString("button.settings"));

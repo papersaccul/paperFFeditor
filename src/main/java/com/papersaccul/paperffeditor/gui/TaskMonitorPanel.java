@@ -101,6 +101,7 @@ public class TaskMonitorPanel extends GridPane implements VideoSettingsObserver,
             ffmpegCommandLabel.setText("FFmpeg Command:     " + ffmpegCommand);
             data.add(new VideoSettingTable("File", videoSettings.getInputFilePath(), videoSettings.getOutputFilePath()));
             //data.add(new VideoSettingTable("FFmpeg Command", ffmpegCommand, ""));
+                                        //    Setting         |             Input              |            Output
             data.add(new VideoSettingTable("Resolution", videoSettings.getInputVideoWidth() + "x" + videoSettings.getInputVideoHeight(), videoSettings.getVideoWidth() + "x" + videoSettings.getVideoHeight()));
             data.add(new VideoSettingTable("Video Bitrate", videoSettings.getInputVideoBitrate() + " kbps", videoSettings.getVideoBitrate() + " kbps"));
             data.add(new VideoSettingTable("Audio Bitrate", videoSettings.getInputAudioBitrate() + " kbps", videoSettings.getAudioBitrate() + " kbps"));

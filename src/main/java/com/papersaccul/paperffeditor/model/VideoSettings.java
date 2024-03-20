@@ -9,6 +9,7 @@ import com.papersaccul.paperffeditor.util.FFmpegCommandBuilder;
  * VideoSettings class encapsulates the settings for video processing.
  */
 public class VideoSettings {
+    // Output file settings
     private String videoCodec;
     private String audioCodec;
     private String videoBitrate;
@@ -22,7 +23,7 @@ public class VideoSettings {
     private String audioChannels;
     private String inputFilePath; 
     private String outputFilePath; 
-    // New fields for input file settings
+    // Input file settings
     private String inputVideoCodec;
     private String inputAudioCodec;
     private String inputVideoBitrate;
@@ -41,8 +42,9 @@ public class VideoSettings {
         notifyObservers();
     }
 
+    // Set default settings on input file
     private void setDefaultSettingsOnInputFile(String inputFilePath) {
-        // Use FFmpegCommandBuilder to get video information for each detail
+        
         this.inputVideoCodec = FFmpegCommandBuilder.getVideoInfo(inputFilePath, "videoCodec");
         this.inputAudioCodec = FFmpegCommandBuilder.getVideoInfo(inputFilePath, "audioCodec");
         this.inputVideoBitrate = FFmpegCommandBuilder.getVideoInfo(inputFilePath, "videoBitrate");
@@ -61,7 +63,7 @@ public class VideoSettings {
         } else this.outputFilePath = "1";
 
 
-    // set input settings for output as default
+    // Set input settings for output as default
         this.videoCodec = this.inputVideoCodec;
         this.audioCodec = this.inputAudioCodec;
         this.videoBitrate = this.inputVideoBitrate;
