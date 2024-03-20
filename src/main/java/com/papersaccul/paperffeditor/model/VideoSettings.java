@@ -1,8 +1,11 @@
 package com.papersaccul.paperffeditor.model;
 
+import java.io.File;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
 import com.papersaccul.paperffeditor.util.FFmpegCommandBuilder;
 
 /**
@@ -35,6 +38,8 @@ public class VideoSettings {
     private String inputDrawingMethod;
     private String inputAudioChannels;
 
+    private static String ffmpegPath;
+
     public VideoSettings() {
         // Default settings are now set based on input file information
         this.inputFilePath = "";
@@ -44,37 +49,40 @@ public class VideoSettings {
 
     // Set default settings on input file
     private void setDefaultSettingsOnInputFile(String inputFilePath) {
-        
-        this.inputVideoCodec = FFmpegCommandBuilder.getVideoInfo(inputFilePath, "videoCodec");
-        this.inputAudioCodec = FFmpegCommandBuilder.getVideoInfo(inputFilePath, "audioCodec");
-        this.inputVideoBitrate = FFmpegCommandBuilder.getVideoInfo(inputFilePath, "videoBitrate");
-        this.inputAudioBitrate = FFmpegCommandBuilder.getVideoInfo(inputFilePath, "audioBitrate");
-        this.inputFrameRate = FFmpegCommandBuilder.getVideoInfo(inputFilePath, "frameRate");
-        this.inputVideoWidth = FFmpegCommandBuilder.getVideoInfo(inputFilePath, "videoWidth");
-        this.inputVideoHeight = FFmpegCommandBuilder.getVideoInfo(inputFilePath, "videoHeight");
-        this.inputDrawingMethod = FFmpegCommandBuilder.getVideoInfo(inputFilePath, "drawingMethod");
-        this.inputAudioChannels = "Stereo"; // todo
+        File inputFile = new File(inputFilePath);
+        if (inputFile.exists()) {
+            Map<String, String> videoInfo = FFmpegCommandBuilder.parseVideoInfo(inputFilePath, this);
+            this.inputVideoCodec = videoInfo.getOrDefault("videoCodec", "");
+            this.inputAudioCodec = videoInfo.getOrDefault("audioCodec", "");
+            this.inputVideoBitrate = videoInfo.getOrDefault("videoBitrate", "");
+            this.inputAudioBitrate = videoInfo.getOrDefault("audioBitrate", "");
+            this.inputFrameRate = videoInfo.getOrDefault("frameRate", "");
+            this.inputVideoWidth = videoInfo.getOrDefault("videoWidth", "");
+            this.inputVideoHeight = videoInfo.getOrDefault("videoHeight", "");
+            this.inputDrawingMethod = videoInfo.getOrDefault("drawingMethod", "");
+            this.inputAudioChannels = "Stereo"; // todo
 
-        if (inputFilePath != "") {
-        int dotIndex = inputFilePath.lastIndexOf('.');
-        String baseName = inputFilePath.substring(0, dotIndex);
-        String extension = inputFilePath.substring(dotIndex);
-        this.outputFilePath = baseName + "_out" + extension;
-        } else this.outputFilePath = "1";
+            int dotIndex = inputFilePath.lastIndexOf('.');
+            String baseName = inputFilePath.substring(0, dotIndex);
+            String extension = inputFilePath.substring(dotIndex);
+            this.outputFilePath = baseName + "_out" + extension;
 
+            // Set input settings for output as default
+            this.videoCodec = this.inputVideoCodec;
+            this.audioCodec = this.inputAudioCodec;
+            this.videoBitrate = this.inputVideoBitrate;
+            this.audioBitrate = this.inputAudioBitrate;
+            this.volume = 100;
+            this.frameRate = this.inputFrameRate;
+            this.videoWidth = this.inputVideoWidth;
+            this.videoHeight = this.inputVideoHeight;
+            this.drawingMethod = this.inputDrawingMethod;
+            this.audioChannels = this.inputAudioChannels;
 
-    // Set input settings for output as default
-        this.videoCodec = this.inputVideoCodec;
-        this.audioCodec = this.inputAudioCodec;
-        this.videoBitrate = this.inputVideoBitrate;
-        this.audioBitrate = this.inputAudioBitrate;
-        this.volume = 100;
-        this.frameRate = this.inputFrameRate;
-        this.videoWidth = this.inputVideoWidth;
-        this.videoHeight = this.inputVideoHeight;
-        this.drawingMethod = this.inputDrawingMethod;
-        this.audioChannels = this.inputAudioChannels;
-
+            ffmpegPath = "ffmpeg"; // Use system env as default
+        } else {
+            this.outputFilePath = "";
+        }
         notifyObservers();
     }
 
@@ -202,6 +210,14 @@ public class VideoSettings {
 
     public void setOutputFilePath(String outputFilePath) {
         setField("outputFilePath", outputFilePath);
+    }
+
+    public String getFfmpegPath() {
+        return ffmpegPath;
+    }
+
+    public void setFfmpegPath(String ffmpegpath) {
+        ffmpegPath = ffmpegpath;                  // without notify observer
     }
 
     // Getters for input settings

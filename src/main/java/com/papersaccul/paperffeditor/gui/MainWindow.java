@@ -102,7 +102,11 @@ public class MainWindow extends BorderPane  {
                 taskRunner.render(false);
             }
         });
+
+
         Button settingsButton = new Button(LocalizationUtil.getString("button.settings"));
+        settingsButton.setOnAction(e -> new SettingsWindow(videoSettings).show());
+
         Button aboutButton = new Button(LocalizationUtil.getString("button.about"));
         Button minimizeButton = new Button("➖"); // emoji for the button - cringe
         Button closeButton = new Button("❌");
@@ -112,13 +116,13 @@ public class MainWindow extends BorderPane  {
         closeButton.setStyle(getAccessibleHelp());
         closeButton.getStyleClass().add("close-button");
 
-        // Import javafx.stage.Stage to fix the error
         minimizeButton.setOnAction(event -> ((Stage) minimizeButton.getScene().getWindow()).setIconified(true));
         closeButton.setOnAction(event -> ((Stage) closeButton.getScene().getWindow()).close());
         // Add main buttons
         HBox mainButtonBox = new HBox(0, startButton, settingsButton, aboutButton);
         HBox controlButtonBox = new HBox(0, minimizeButton, closeButton);
         HBox combinedBox = new HBox(); 
+
 
         // mainButtonBox.setPadding(new Insets(0, 0, 0, 0));
         // controlButtonBox.setPadding(new Insets(0, 0, 0, 0));
@@ -127,6 +131,7 @@ public class MainWindow extends BorderPane  {
         HBox.setHgrow(mainButtonBox, Priority.ALWAYS); 
         combinedBox.getChildren().addAll(mainButtonBox, controlButtonBox);
         combinedBox.setAlignment(Pos.TOP_RIGHT);
+        //mainButtonBox.setAlignment(Pos.CENTER);
 
         this.setTop(combinedBox);
     }

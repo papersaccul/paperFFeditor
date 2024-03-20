@@ -14,7 +14,6 @@ import java.util.Map;
  * based on the provided video settings.
  */
 public class FFmpegCommandBuilder {
-    
     /**
      * Builds the FFmpeg command string based on the provided VideoSettings.
      * 
@@ -24,7 +23,8 @@ public class FFmpegCommandBuilder {
      * @return the FFmpeg command as a String
      */
     public static String buildCommand(String inputFilePath, String outputFilePath, VideoSettings settings) {
-        StringBuilder command = new StringBuilder("ffmpeg -i ");
+        String ffmpegPath = settings.getFfmpegPath();
+        StringBuilder command = new StringBuilder(ffmpegPath + " -i ");
 
         
         command.append(quote(inputFilePath));
@@ -107,8 +107,24 @@ public class FFmpegCommandBuilder {
      * @param detail the detail to retrieve (e.g., "audioCodec", "videoCodec", "bitrate", "resolution", "frameRate", "audioChannels")
      * @return the requested detail information as a string
      */
-    public static String getVideoInfo(String filePath, String detail) {
-        String command = "ffmpeg -i " + quote(filePath);
+    /**
+     * Parses video information and returns a map with all the details.
+     * 
+     * @param filePath the path to the video file
+     * @param settings the video settings
+     * @return a map containing all parsed video details
+     */
+    public static Map<String, String> parseVideoInfo(String filePath, VideoSettings settings) {
+
+        String ffmpegPath = settings.getFfmpegPath();
+        String command;
+
+        if (ffmpegPath != null) {
+            command = ffmpegPath + " -i " + quote(filePath);
+        } else {
+            command = "ffmpeg -i " + quote(filePath);
+        }
+
         Map<String, String> videoDetails = new HashMap<>();
         try {
             Process process = Runtime.getRuntime().exec(command);
@@ -116,7 +132,7 @@ public class FFmpegCommandBuilder {
             String line;
             while ((line = reader.readLine()) != null) {
 
-        // Video stream
+                // Video stream
                 if (line.contains("Stream #0:0")) { 
                     videoDetails.put("videoCodec", cleanCodecName(extractDetail(line, "Video: ")));
                     String drawingMethodDetail = extractDetail(line, "Video: ", "(").trim();
@@ -127,7 +143,6 @@ public class FFmpegCommandBuilder {
                     }
                     String[] resolutionParts = resolutionDetail.split("x");
                     if (resolutionParts.length == 2) {
-       
                         String width = resolutionParts[0].substring(resolutionParts[0].lastIndexOf(" ")).trim();
                         videoDetails.put("videoWidth", width);
                         videoDetails.put("videoHeight", resolutionParts[1].split(" ")[0].trim()); 
@@ -135,7 +150,7 @@ public class FFmpegCommandBuilder {
 
                     String frameRateDetail = extractFrameRate(line);
                     videoDetails.put("frameRate", frameRateDetail);
-        // Audio stream
+                // Audio stream
                 } else if (line.contains("Stream #0:1")) { 
                     videoDetails.put("audioCodec", cleanCodecName(extractDetail(line, "Audio: ")));
                     videoDetails.put("audioChannels", extractDetail(line, "Audio: ", ","));
@@ -149,7 +164,7 @@ public class FFmpegCommandBuilder {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return videoDetails.getOrDefault(detail, "Detail not found");
+        return videoDetails;
     }
     
     private static String extractFrameRate(String line) {

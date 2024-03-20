@@ -11,7 +11,22 @@ public class AppConfig {
     private static Locale locale = Locale.getDefault();
     // ResourceBundle for internationalization
     private static final String MessagesBundleName = "com.papersaccul.paperffeditor.MessagesBundle";
-    private static ResourceBundle resourceBundle = ResourceBundle.getBundle(MessagesBundleName, locale);
+    private static ResourceBundle resourceBundle = loadResourceBundle();
+
+    /**
+     * Loads the ResourceBundle with a fallback to English if the default is not found.
+     * 
+     * @return The loaded ResourceBundle.
+     */
+    private static ResourceBundle loadResourceBundle() {
+        try {
+            return ResourceBundle.getBundle(MessagesBundleName, locale);
+        } catch (Exception e) {
+            // Fallback to English if the default locale's bundle is not found
+            return ResourceBundle.getBundle(MessagesBundleName, new Locale("en", "GB"));
+        }
+    }
+
     /**
      * Gets the current application locale.
      * 
@@ -28,7 +43,7 @@ public class AppConfig {
      */
     public static void setLocale(Locale newLocale) {
         locale = newLocale;
-        resourceBundle = ResourceBundle.getBundle(MessagesBundleName, locale);
+        resourceBundle = loadResourceBundle();
     }
 
     /**

@@ -69,7 +69,7 @@ public class FileSelectionPanel extends GridPane implements VideoSettingsObserve
         this.add(outputLabel, 0, 1);
         this.add(outputFilePathField, 1, 1);
         this.add(outputBrowseButton, 2, 1);
-        this.add(new Label("Video Settings:"), 0, 2);
+//this.add(new Label("Video Settings:"), 0, 2);
         inputVideoSettingsLabel = new Label();
         this.add(inputVideoSettingsLabel, 1, 2);
     }
