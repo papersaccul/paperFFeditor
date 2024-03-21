@@ -39,12 +39,11 @@ public class VideoSettings {
     private String inputAudioChannels;
 
     private static String ffmpegPath;
-
     public VideoSettings() {
         // Default settings are now set based on input file information
         this.inputFilePath = "";
         setDefaultSettingsOnInputFile(this.inputFilePath);
-        notifyObservers();
+        //notifyObservers();
     }
 
     // Set default settings on input file
@@ -90,7 +89,9 @@ public class VideoSettings {
 
     
     public void addObserver(VideoSettingsObserver observer) {
-        observers.add(observer);
+        if (!observers.contains(observer)) {
+            observers.add(observer);
+        }
     }
 
     public void removeObserver(VideoSettingsObserver observer) {
@@ -102,6 +103,7 @@ public class VideoSettings {
             observer.updateVideoSettingsInfo(this);
         }
     }
+    
 
     private void setField(String fieldName, Object value) {
         try {
@@ -109,6 +111,7 @@ public class VideoSettings {
             field.setAccessible(true);
             field.set(this, value);
             notifyObservers();
+
         } catch (NoSuchFieldException | IllegalAccessException e) {
             e.printStackTrace();
         }
@@ -277,4 +280,5 @@ public class VideoSettings {
                 '}';
     }
 }
+
 

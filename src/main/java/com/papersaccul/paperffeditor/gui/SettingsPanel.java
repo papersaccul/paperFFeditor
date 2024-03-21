@@ -30,6 +30,8 @@ public class SettingsPanel extends GridPane implements VideoSettingsObserver {
     private ComboBox<String> audioChannelComboBox;
     private VideoSettings videoSettings;
 
+    private boolean isUpdating = false;
+
     public SettingsPanel(VideoSettings videoSettings) {
         this.videoSettings = videoSettings;
         initUI();
@@ -50,44 +52,60 @@ public class SettingsPanel extends GridPane implements VideoSettingsObserver {
         Label videoBitrateLabel = new Label(LocalizationUtil.getString("label.videoBitrate"));
         videoBitrateField = new TextField();
         videoBitrateField.textProperty().addListener((observable, oldValue, newValue) -> {
-            try {
-                videoSettings.setVideoBitrate(newValue);
-            } catch (NumberFormatException e) {
-                System.err.println("VideoBitrateField error");
+            if (!isUpdating) {
+                try {
+                    videoSettings.setVideoBitrate(newValue);
+                } catch (NumberFormatException e) {
+                    System.err.println("VideoBitrateField error");
+                }
             }
         });
 
         Label audioBitrateLabel = new Label(LocalizationUtil.getString("label.audioBitrate"));
         audioBitrateField = new TextField();
         audioBitrateField.textProperty().addListener((observable, oldValue, newValue) -> {
-            try {
-                videoSettings.setAudioBitrate(newValue);
-            } catch (NumberFormatException e) {
-                System.err.println("AudioBitrateField error");
+            if (!isUpdating) {
+                try {
+                    videoSettings.setAudioBitrate(newValue);
+                } catch (NumberFormatException e) {
+                    System.err.println("AudioBitrateField error");
+                }
             }
         });
 
         Label volumeLabel = new Label(LocalizationUtil.getString("label.volume"));
         volumeSlider = new Slider(0, 100, 100);
-        volumeSlider.valueProperty().addListener((observable, oldValue, newValue) -> videoSettings.setVolume(newValue.doubleValue()));
+        volumeSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
+            if (!isUpdating) {
+                try {
+                    videoSettings.setVolume(newValue.doubleValue());
+                } catch (NumberFormatException e) {
+                    System.err.println("VolumeSlider error");
+                }
+            }
+        });
 
         Label frameRateLabel = new Label(LocalizationUtil.getString("label.frameRate"));
         frameRateField = new TextField();
         frameRateField.textProperty().addListener((observable, oldValue, newValue) -> {
-            try {
-                videoSettings.setFrameRate(newValue);
-            } catch (NumberFormatException e) {
+            if (!isUpdating) {
+                try {
+                    videoSettings.setFrameRate(newValue);
+                } catch (NumberFormatException e) {
                 System.err.println("FrameRateField error");
+                }
             }
         });
 
         Label videoWidthLabel = new Label(LocalizationUtil.getString("label.videoWidth"));
         videoWidthField = new TextField();
         videoWidthField.textProperty().addListener((observable, oldValue, newValue) -> {
-            try {
-                videoSettings.setVideoWidth(newValue);
-            } catch (NumberFormatException e) {
+            if (!isUpdating) {
+                try {
+                    videoSettings.setVideoWidth(newValue);
+                } catch (NumberFormatException e) {
                 System.err.println("VideoWidthField error");
+                }
             }
         });
         
@@ -95,10 +113,12 @@ public class SettingsPanel extends GridPane implements VideoSettingsObserver {
         Label videoHeightLabel = new Label(LocalizationUtil.getString("label.videoHeight"));
         videoHeightField = new TextField();
         videoHeightField.textProperty().addListener((observable, oldValue, newValue) -> {
-            try {
-                videoSettings.setVideoHeight(newValue);
-            } catch (NumberFormatException e) {
+            if (!isUpdating) {
+                try {
+                    videoSettings.setVideoHeight(newValue);
+                } catch (NumberFormatException e) {
                 System.err.println("VideoHeightField error");
+                }
             }
         });
 
@@ -108,7 +128,14 @@ public class SettingsPanel extends GridPane implements VideoSettingsObserver {
         audioChannelComboBox.getItems().addAll("Mono", "Stereo", "5.1", "7.1");
         //audioChannelComboBox.setValue("Stereo");
         audioChannelComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
-            videoSettings.setAudioChannels(newValue);
+            if (!isUpdating) {
+                try {
+                    videoSettings.setAudioChannels(newValue);
+                } catch (NumberFormatException e) {
+                    System.err.println("AudioChannelComboBox error");
+                }
+            }
+            
         });
 
         Label audioCodecLabel = new Label(LocalizationUtil.getString("label.audioCodec"));
@@ -137,9 +164,24 @@ public class SettingsPanel extends GridPane implements VideoSettingsObserver {
             e.printStackTrace();
         }
         
-        videoCodecComboBox.valueProperty().addListener((observable, oldValue, newValue) -> videoSettings.setVideoCodec(newValue));
-        audioCodecComboBox.valueProperty().addListener((observable, oldValue, newValue) -> videoSettings.setAudioCodec(newValue));
-
+        videoCodecComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
+            if (!isUpdating) {
+                try {
+                    videoSettings.setVideoCodec(newValue);
+                } catch (NumberFormatException e) {
+                    System.err.println("VideoCodecComboBox error");
+                }
+            }
+        });
+        audioCodecComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
+            if (!isUpdating) {
+                try {
+                    videoSettings.setAudioCodec(newValue);
+                } catch (NumberFormatException e) {
+                    System.err.println("AudioCodecComboBox error");
+                }
+            }
+        });
 
         
         /*
@@ -169,6 +211,7 @@ public class SettingsPanel extends GridPane implements VideoSettingsObserver {
     @Override
     public void updateVideoSettingsInfo(VideoSettings videoSettings) {
         if (videoSettings != null) {
+            isUpdating = true;
             videoCodecComboBox.setValue(videoSettings.getVideoCodec());
             audioCodecComboBox.setValue(videoSettings.getAudioCodec());
             videoBitrateField.setText(videoSettings.getVideoBitrate());
@@ -178,6 +221,7 @@ public class SettingsPanel extends GridPane implements VideoSettingsObserver {
             videoWidthField.setText(videoSettings.getVideoWidth());
             videoHeightField.setText(videoSettings.getVideoHeight());
             audioChannelComboBox.setValue(videoSettings.getAudioChannels());
+
         } else {
             // hardcode defalut valuess
             videoCodecComboBox.setValue("H.264");
@@ -190,5 +234,6 @@ public class SettingsPanel extends GridPane implements VideoSettingsObserver {
             videoWidthField.setText("800");
             audioChannelComboBox.setValue("Stereo");
         }
+        isUpdating = false;
     }
 }

@@ -22,6 +22,8 @@ public class FileSelectionPanel extends GridPane implements VideoSettingsObserve
     private VideoSettings videoSettings;
     private Label inputVideoSettingsLabel;
 
+    private boolean isUpdating = false;
+
     public FileSelectionPanel(VideoSettings videoSettings) {
         this.videoSettings = videoSettings;
         initUI();
@@ -48,18 +50,22 @@ public class FileSelectionPanel extends GridPane implements VideoSettingsObserve
         outputBrowseButton.setOnAction(e -> chooseFile(outputFilePathField, false));
 
         inputFilePathField.textProperty().addListener((observable, oldValue, newValue) -> {
-            try {
-            videoSettings.setInputFilePath(newValue);
-            } catch (NumberFormatException e) {
-                System.err.println("InputFilePathField error");
+            if (!isUpdating) {
+                try {
+                    videoSettings.setInputFilePath(newValue);
+                } catch (NumberFormatException e) {
+                    System.err.println("InputFilePathField error");
+                }
             }
         });
         
         outputFilePathField.textProperty().addListener((observable, oldValue, newValue) -> {
-            try {
-            videoSettings.setOutputFilePath(newValue);
-            } catch (NumberFormatException e) {
-                System.err.println("OutputFilePathField error");
+            if (!isUpdating) {
+                try {
+                    videoSettings.setOutputFilePath(newValue);
+                } catch (NumberFormatException e) {
+                    System.err.println("OutputFilePathField error");
+                }
             }
         });
 
@@ -105,7 +111,9 @@ public class FileSelectionPanel extends GridPane implements VideoSettingsObserve
 
     @Override
     public void updateVideoSettingsInfo(VideoSettings videoSettings) {
+        isUpdating = true; 
         outputFilePathField.setText(videoSettings.getOutputFilePath());
+        isUpdating = false;
     }
 
 }
