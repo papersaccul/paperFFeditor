@@ -108,6 +108,8 @@ public class MainWindow extends BorderPane  {
         settingsButton.setOnAction(e -> new SettingsWindow(videoSettings).show());
 
         Button aboutButton = new Button(LocalizationUtil.getString("button.about"));
+        aboutButton.setOnAction(e -> new AboutWindow().show());
+
         Button minimizeButton = new Button("➖"); // emoji for the button - cringe
         Button closeButton = new Button("❌");
 
