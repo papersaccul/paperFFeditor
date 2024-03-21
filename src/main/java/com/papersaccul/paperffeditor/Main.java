@@ -32,7 +32,7 @@ public class Main extends Application {
      * @param primaryStage the primary stage for this application
      */
     @Override
-    public void start(Stage primaryStage) {
+    public void start(@SuppressWarnings("exports") Stage primaryStage) {
         MainWindow mainWindow = new MainWindow();
         BorderPane borderPane = new BorderPane();
 

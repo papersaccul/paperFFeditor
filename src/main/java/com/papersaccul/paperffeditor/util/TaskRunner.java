@@ -4,7 +4,6 @@ import com.papersaccul.paperffeditor.model.TaskStatus;
 import com.papersaccul.paperffeditor.model.VideoSettings;
 //import com.papersaccul.paperffeditor.util.FFmpegCommandBuilder;
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 

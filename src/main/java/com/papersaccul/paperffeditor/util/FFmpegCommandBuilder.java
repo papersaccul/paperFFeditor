@@ -41,12 +41,27 @@ public class FFmpegCommandBuilder {
         }
         
 // Video Bitrate
-        if (Integer.parseInt(settings.getVideoBitrate()) > 0) {
-            command.append(" -b:v ").append(settings.getVideoBitrate()).append("k");
+        if (settings.getVideoBitrate() != null && !settings.getVideoBitrate().isEmpty()) {
+            try {
+                int videoBitrate = Integer.parseInt(settings.getVideoBitrate());
+                if (videoBitrate > 0) {
+                    command.append(" -b:v ").append(videoBitrate).append("k");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Error parsing video bitrate: " + e.getMessage());
+            }
         }
+
 // Audio Bitrate
-        if (Integer.parseInt(settings.getAudioBitrate()) > 0) {
-            command.append(" -b:a ").append(settings.getAudioBitrate()).append("k");
+        if (settings.getAudioBitrate() != null && !settings.getAudioBitrate().isEmpty()) {
+            try {
+                int audioBitrate = Integer.parseInt(settings.getAudioBitrate());
+                if (audioBitrate > 0) {
+                    command.append(" -b:a ").append(audioBitrate).append("k");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Error parsing audio bitrate: " + e.getMessage());
+            }
         }
         
 // Volume
@@ -55,8 +70,15 @@ public class FFmpegCommandBuilder {
         }
         
 // Frame rate
-        if (Integer.parseInt(settings.getFrameRate()) > 0) {
-            command.append(" -r ").append(settings.getFrameRate());
+        if (settings.getFrameRate() != null && !settings.getFrameRate().isEmpty()) {
+            try {
+                int frameRate = Integer.parseInt(settings.getFrameRate());
+                if (frameRate > 0) {
+                    command.append(" -r ").append(frameRate);
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Error parsing frame rate: " + e.getMessage());
+            }
         }
         
 // Resolution
@@ -102,12 +124,6 @@ public class FFmpegCommandBuilder {
     }
     
     /**
-     * Get specific video information based on the requested detail
-     * @param filePath path to media
-     * @param detail the detail to retrieve (e.g., "audioCodec", "videoCodec", "bitrate", "resolution", "frameRate", "audioChannels")
-     * @return the requested detail information as a string
-     */
-    /**
      * Parses video information and returns a map with all the details.
      * 
      * @param filePath the path to the video file
@@ -125,18 +141,18 @@ public class FFmpegCommandBuilder {
             command = "ffmpeg -i " + quote(filePath);
         }
 
-        Map<String, String> videoDetails = new HashMap<>();
+        Map<String, String> details = new HashMap<>();
         try {
             Process process = Runtime.getRuntime().exec(command);
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
             String line;
+            boolean isVideo = false;
             while ((line = reader.readLine()) != null) {
-
-                // Video stream
-                if (line.contains("Stream #0:0")) { 
-                    videoDetails.put("videoCodec", cleanCodecName(extractDetail(line, "Video: ")));
+                if (line.contains("Stream #0:0") && line.contains("Video: ")) {
+                    isVideo = true;
+                    details.put("videoCodec", cleanCodecName(extractDetail(line, "Video: ")));
                     String drawingMethodDetail = extractDetail(line, "Video: ", "(").trim();
-                    videoDetails.put("drawingMethod", drawingMethodDetail);
+                    details.put("drawingMethod", drawingMethodDetail);
                     String resolutionDetail = extractDetail(line, "),", "[SAR");
                     if (resolutionDetail.isEmpty()) {
                         resolutionDetail = extractDetail(line, drawingMethodDetail + ")", "[SAR");
@@ -144,27 +160,27 @@ public class FFmpegCommandBuilder {
                     String[] resolutionParts = resolutionDetail.split("x");
                     if (resolutionParts.length == 2) {
                         String width = resolutionParts[0].substring(resolutionParts[0].lastIndexOf(" ")).trim();
-                        videoDetails.put("videoWidth", width);
-                        videoDetails.put("videoHeight", resolutionParts[1].split(" ")[0].trim()); 
+                        details.put("videoWidth", width);
+                        details.put("videoHeight", resolutionParts[1].split(" ")[0].trim()); 
                     }
 
                     String frameRateDetail = extractFrameRate(line);
-                    videoDetails.put("frameRate", frameRateDetail);
-                // Audio stream
-                } else if (line.contains("Stream #0:1")) { 
-                    videoDetails.put("audioCodec", cleanCodecName(extractDetail(line, "Audio: ")));
-                    videoDetails.put("audioChannels", extractDetail(line, "Audio: ", ","));
+                    details.put("frameRate", frameRateDetail);
+                } else if (line.contains("Stream #0:1") || (line.contains("Stream #0:0") && !isVideo)) {
+                    details.put("audioCodec", cleanCodecName(extractDetail(line, "Audio: ")));
+                    details.put("audioChannels", extractDetail(line, "Audio: ", ","));
 
                     String audioBitrateDetail = extractAudioBitrate(line);
-                    videoDetails.put("audioBitrate", audioBitrateDetail);
-                } else if (line.contains("bitrate:")) {
-                    videoDetails.put("videoBitrate", extractDetail(line, "bitrate: "));
+                    details.put("audioBitrate", audioBitrateDetail);
+                }
+                if (line.contains("bitrate:")) {
+                    details.put("bitrate", extractDetail(line, "bitrate: "));
                 }
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return videoDetails;
+        return details;
     }
     
     private static String extractFrameRate(String line) {
@@ -204,6 +220,3 @@ public class FFmpegCommandBuilder {
         return "Detail not found";
     }
 }
-
-
-
