@@ -68,7 +68,7 @@ public class FFmpegCommandBuilder {
         if (settings.getVolume() != 100) { // Assuming 100 is the default volume percentage
             command.append(" -filter:a \"volume=").append(settings.getVolume()).append("%\"");
         }
-    
+        
 // Frame rate
         if (settings.getFrameRate() != null && !settings.getFrameRate().isEmpty()) {
             try {

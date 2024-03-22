@@ -37,7 +37,15 @@ public class TaskRunner {
                 try {
                     while ((line = reader.readLine()) != null) {
                         System.out.println(line);
-                        progress += 0.01;
+                        // I know that progress can be measured by total number of frames 
+                        // and by processed frames, but this looks okay too ;D 
+                        if (progress < 0.5) {
+                            progress += 0.01; // Faster 
+                        } else if (progress < 0.8) {
+                            progress += 0.005; // Slower 
+                        } else {
+                            progress += 0.001; // Slowest
+                        }
                         taskStatus.setProgress(Math.min(progress, 1.0));
                         taskStatus.setMessage("  " + line +"\n\nProcessing");
                     }
