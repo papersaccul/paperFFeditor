@@ -84,7 +84,7 @@ public class VideoSettings {
         }
         notifyObservers();
     }
-
+    
     private List<VideoSettingsObserver> observers = new ArrayList<>();
 
     

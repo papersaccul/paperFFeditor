@@ -13,5 +13,5 @@ nvm clean package
 ```
 ## Run
 ```
-java -jar ./target/paperffeditor-0.1.6-jar-with-dependencies.jar
+java -jar ./target/paperffeditor-{version}-jar-with-dependencies.jar
 ```

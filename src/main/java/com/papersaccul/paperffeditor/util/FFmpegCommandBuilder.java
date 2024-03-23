@@ -142,17 +142,20 @@ public class FFmpegCommandBuilder {
         }
 
         Map<String, String> details = new HashMap<>();
+        // String videoBitrate = "";
+        // String audioBitrate = "";
         try {
             Process process = Runtime.getRuntime().exec(command);
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
             String line;
-            boolean isVideo = false;
             while ((line = reader.readLine()) != null) {
-                if (line.contains("Stream #0:0") && line.contains("Video: ")) {
-                    isVideo = true;
+        // Video
+                if (line.contains("Stream") && line.contains("Video:")) {
+                    
                     details.put("videoCodec", cleanCodecName(extractDetail(line, "Video: ")));
                     String drawingMethodDetail = extractDetail(line, "Video: ", "(").trim();
                     details.put("drawingMethod", drawingMethodDetail);
+
                     String resolutionDetail = extractDetail(line, "),", "[SAR");
                     if (resolutionDetail.isEmpty()) {
                         resolutionDetail = extractDetail(line, drawingMethodDetail + ")", "[SAR");
@@ -163,20 +166,17 @@ public class FFmpegCommandBuilder {
                         details.put("videoWidth", width);
                         details.put("videoHeight", resolutionParts[1].split(" ")[0].trim()); 
                     }
-
-                    String frameRateDetail = extractFrameRate(line);
-                    details.put("frameRate", frameRateDetail);
-                } else if (line.contains("Stream #0:1") || (line.contains("Stream #0:0") && !isVideo)) {
+                    details.put("frameRate", extractFrameRate(line));
+                    details.put("videoBitrate", extractBitrate(line));
+                    
+        // Audio
+                } else if (line.contains("Stream") && line.contains("Audio:")) {
                     details.put("audioCodec", cleanCodecName(extractDetail(line, "Audio: ")));
                     details.put("audioChannels", extractDetail(line, "Audio: ", ","));
-
-                    String audioBitrateDetail = extractAudioBitrate(line);
-                    details.put("audioBitrate", audioBitrateDetail);
-                }
-                if (line.contains("bitrate:")) {
-                    details.put("videoBitrate", extractDetail(line, "bitrate: "));
+                    details.put("audioBitrate", extractAudioBitrate(line));
                 }
             }
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -218,5 +218,17 @@ public class FFmpegCommandBuilder {
             }
         }
         return "Detail not found";
+    }
+
+    private static String extractBitrate(String line) {
+        String bitrate = "Detail not found";
+        String[] parts = line.split(",");
+        for (String part : parts) {
+            if (part.trim().contains("kb/s")) {
+                bitrate = part.trim().split(" ")[0];
+                break;
+            }
+        }
+        return bitrate;
     }
 }
