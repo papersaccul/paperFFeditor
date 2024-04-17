@@ -9,7 +9,7 @@ A simple program that is a GUI shell for [FFmpeg](https://ffmpeg.org/).
 ```shell
 git clone https://github.com/papersaccul/paperFFeditor
 cd ./paperFFeditor
-nvm clean package
+mvn clean package
 ```
 ## Run
 ```
